@@ -1,3 +1,46 @@
+# Satoshiverse Avatar Project
+` Built by Herasoft for Apollo NFT` 
+> - Claim your Satoshiverse Avatar based on a series of available NFTs in the Satoshiverse. 
+> - Avatars are hashed to IPFS and provably random with fair minting distribution based on Chainlink VRF and a HyperScript for decision trees. 
+
+
+# Window of Opportunity 
+Distribution (Target start: Early/Mid November)
+Phased distribution based on token category.
+Schedule:
+> ` Day 1: 11:00 AM EST – 5:00 PM EST`
+- Genesis
+> ` Day 1-2: 5:00 PM EST- 11:00 AM EST`
+- Genesis
+- Platinum
+> ` Day 2-3: 11:00 AM EST – 11:00 AM EST `
+- Genesis
+- Platinum
+- Gold
+> `Day 3-4: 11:00 AM EST – 11:00 AM EST `
+- Genesis
+- Platinum
+- Gold
+- Silver
+> `Day 4-7: 11:00 AM EST – 11:00 AM EST `
+- Genesis
+- Platinum
+- Gold
+- Silver
+- Bronze
+> ` Day 7 : 12:00 PM EST`
+- If sold out through presale
+All remaining legionnaires minted and sent to designated holding account.
+If not sold out through presale
+
+`Unclaimed Legionnaires (difference between number of legionnaires claimed and number of presale tokens sold) minted and sent to designated holding account (the goal here would just be to have legionnaires on hold for anyone who bought a token but forgot to claim).`
+
+
+# Randomization Script 
+` Chainlink VRF `
+> - setTokenHash [ tokenId ] , [ ipfsHash]
+
+
 # Basic Sample Hardhat Project
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
