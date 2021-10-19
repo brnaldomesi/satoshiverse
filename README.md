@@ -41,13 +41,15 @@ If not sold out through presale
 > - setTokenHash [ tokenId ] , [ ipfsHash]
 
 
-# Basic Sample Hardhat Project
+# How to Build
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+This project demonstrates a the Satoshiverse Avatar Claim Project. We decided to leverage HardHat framework for a modern web3 stack.
 
-Try running some of the following tasks:
+To get started try running some of the following tasks:
 
 ```shell
+nvm use 15.14.0
+npx i
 npx hardhat accounts
 npx hardhat compile
 npx hardhat clean
