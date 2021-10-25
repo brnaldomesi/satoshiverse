@@ -7,22 +7,26 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-
-contract SatoshiVerse is ERC721Enumerable, Ownable {
+// Sale contract
+contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
   using Counters for Counters.Counter;
   using Strings for uint256;
 
-  address payable private _PaymentAddress =
-    payable(0x7e0226d51654111E228D1cF85D7fF9Db1794D969);
-  address payable private _DevAddress;
-
-  uint256 public GLX_MAX = 10157;
-  uint256 public PURCHASE_LIMIT = 30;
+  address gensisAddress = 0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8;
+  address ooffAddress = 0x1d9545f79e40DC463da094d1eE138668670eeB19;
+  
+  uint256 public SV_MAX = 9999;
+  uint256 public PURCHASE_LIMIT = 1;
   uint256 public PRICE = 70_000_000_000_000_000; // 0.07 ETH
 
-  uint256 private _activeDateTime = 1632600000; // September 25, 2021 8:00:00 PM
+  uint256 private _activeDateTime = 1636905600; // November 14th at 11:00 AM EST
+  uint256 constant INTERVAL = 3600;
+
   string private _contractURI = "";
   string private _tokenBaseURI1 = "";
   string private _tokenBaseURI2 = "";
@@ -31,14 +35,27 @@ contract SatoshiVerse is ERC721Enumerable, Ownable {
   string private _tokenBaseURI5 = "";
   string private _tokenBaseURI6 = "";
 
-  Counters.Counter private _publicGLX;
+  Counters.Counter private _publicSV;
 
-  constructor() ERC721("Galaxer", "GLX") {
-    _DevAddress = payable(msg.sender);
+  constructor() ERC721("SatoshiVerse", "SV") {
+
   }
 
-  function setPaymentAddress(address paymentAddress) external onlyOwner {
-    _PaymentAddress = payable(paymentAddress);
+  function _daysSince() internal view returns (uint256) {
+    unchecked {
+      uint256 passedTime = (block.timestamp - _activeDateTime) / INTERVAL;
+      if(passedTime <= 6) {
+        return 1;
+      } else if( passedTime <= 24) {
+        return 2;
+      } else if( passedTime <= 48 ) {
+        return 3;
+      } else if( passedTime <=72 ) {
+        return 4;
+      } else{
+        return 5;
+      }
+    }
   }
 
   function setActiveDateTime(uint256 activeDateTime) external onlyOwner {
@@ -69,61 +86,79 @@ contract SatoshiVerse is ERC721Enumerable, Ownable {
     PRICE = mintPrice;
   }
 
-  function setPurchaseLimit(uint256 purchaseLimit) external onlyOwner {
-    PURCHASE_LIMIT = purchaseLimit;
+  function getPurchaseLimit() external returns(uint256) {
+    
   }
 
   function setMaxLimit(uint256 maxLimit) external onlyOwner {
-    GLX_MAX = maxLimit;
+    SV_MAX = maxLimit;
   }
 
   function gift(address to, uint256 numberOfTokens) external onlyOwner {
     for (uint256 i = 0; i < numberOfTokens; i++) {
-      uint256 tokenId = _publicGLX.current();
+      uint256 tokenId = _publicSV.current();
 
-      if (_publicGLX.current() < GLX_MAX) {
-        _publicGLX.increment();
+      if (_publicSV.current() < SV_MAX) {
+        _publicSV.increment();
         _safeMint(to, tokenId);
       }
     }
   }
 
-  function purchase(uint256 numberOfTokens) external payable {
-    require(
-      numberOfTokens <= PURCHASE_LIMIT,
-      "Can only mint up to purchase limit"
-    );
+  function max(uint a, uint b) private pure returns (uint) {
+    return a > b ? a : b;
+  }
 
-    require(
-      _publicGLX.current() < GLX_MAX,
-      "Purchase would exceed GLX_MAX"
-    );
+  function claim(uint256 claimedCount) external nonReentrant {
+    require(block.timestamp >= _activeDateTime, "Distribution doesn't start yet");
+    require(block.timestamp <= _activeDateTime + 86400 * 7, "Distribution is ended");
+    
+    uint256 passedDays = _daysSince();
+    IERC721Enumerable genesisToken = IERC721Enumerable(gensisAddress);
+    IERC1155 ooffToken = IERC1155(ooffAddress);
 
-    if (msg.sender != owner()) {
-      require(
-        block.timestamp > _activeDateTime,
-        "Contract is not active"
-      );
-      require(
-        PRICE * numberOfTokens <= msg.value,
-        "ETH amount is not sufficient"
-      );
+    uint256 genesisTokenCount = genesisToken.balanceOf(msg.sender);
+    uint256 platinumTokenCount = ooffToken.balanceOf(msg.sender, 1);
+    uint256 goldTokenCount = ooffToken.balanceOf(msg.sender, 4);
+    uint256 silverTokenCount = ooffToken.balanceOf(msg.sender, 2);
+    uint256 bronzeTokenCount = ooffToken.balanceOf(msg.sender, 3);
 
+    uint256 tokensCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 i = 0;
+    uint256 tokenId;
 
-      uint256 feeAmount = (msg.value * 5) / 100;
-      _DevAddress.transfer(feeAmount);
-      _PaymentAddress.transfer(msg.value - feeAmount);
-    }
+    // if(passedDays == 1) {
+    //   require(genesisTokenCount >= claimedCount, "User doesn't have enough token to claim");
+    // } else if (passedDays == 2) {
+    //   require(genesisTokenCount + platinumTokenCount >= claimedCount, "User doesn't have enough token to claim");
+    // } else if (passedDays == 3) {
+    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount >= claimedCount, "User doesn't have enough token to claim");
+    // } else if (passedDays == 4) {
+    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount >= claimedCount, "User doesn't have enough token to claim");
+    // } else if (passedDays == 5) {
+    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount >= claimedCount, "User doesn't have enough token to claim");
+    // }
 
+    while(i < tokensCount) {
+      if(genesisToken.balanceOf(msg.sender) > 0) {
+        tokenId = genesisToken.tokenOfOwnerByIndex(msg.sender, i);
+        genesisToken.safeTransferFrom(msg.sender, address(this), tokenId);
+      } else if (passedDays >= 2 && ooffToken.balanceOf(msg.sender, 1) > 0) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 1, 1, "");
+      } else if (passedDays >= 3 && ooffToken.balanceOf(msg.sender, 4) > 0) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 4, 1, "");
+      } else if (passedDays >= 4 && ooffToken.balanceOf(msg.sender, 2) > 0) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 2, 1, "");
+      } else if (passedDays >= 5 && ooffToken.balanceOf(msg.sender, 3) > 0) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 3, 1, "");
+      }
 
-    for (uint256 i = 0; i < numberOfTokens; i++) {
-      uint256 tokenId = _publicGLX.current();
-
-
-      if (_publicGLX.current() < GLX_MAX) {
-        _publicGLX.increment();
+      tokenId = _publicSV.current();
+      if (_publicSV.current() < SV_MAX) {
+        _publicSV.increment();
         _safeMint(msg.sender, tokenId);
       }
+      i++;
     }
   }
 
