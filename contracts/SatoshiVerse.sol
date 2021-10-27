@@ -35,6 +35,8 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
   string private _tokenBaseURI5 = "";
   string private _tokenBaseURI6 = "";
 
+  mapping(address => mapping(string => uint256)) public tokensCount;
+
   Counters.Counter private _publicSV;
 
   constructor() ERC721("SatoshiVerse", "SV") {
@@ -109,6 +111,54 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     return a > b ? a : b;
   }
 
+  function seed(address user, string memory tokenType, uint256 count) external onlyOwner {
+    require(msg.sender != address(0), "Invalid user address");
+    tokensCount[user][tokenType] += count;
+  }
+
+  function claim1(uint256 claimedCount) external nonReentrant {
+    require(block.timestamp >= _activeDateTime, "Distribution doesn't start yet");
+    require(block.timestamp <= _activeDateTime + 86400 * 7, "Distribution is ended");
+
+    uint256 passedDays = _daysSince();
+
+    uint256 genesisTokenCount = tokensCount[msg.sender]['genesis'];
+    uint256 platinumTokenCount = tokensCount[msg.sender]['platinum'];
+    uint256 goldTokenCount = tokensCount[msg.sender]['gold'];
+    uint256 silverTokenCount = tokensCount[msg.sender]['silver'];
+    uint256 bronzeTokenCount = tokensCount[msg.sender]['bronze'];
+
+    uint256 maxCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 i = 0;
+    uint256 tokenId;
+
+    while(i < maxCount) {
+      if(genesisTokenCount > 0) {
+        genesisTokenCount--;
+      } else if (passedDays >= 2 && platinumTokenCount > 0) {
+        platinumTokenCount--;
+      } else if (passedDays >= 3 && goldTokenCount > 0) {
+        goldTokenCount--;
+      } else if (passedDays >= 4 && silverTokenCount > 0) {
+        silverTokenCount--;
+      } else if (passedDays >= 5 && bronzeTokenCount > 0) {
+        bronzeTokenCount--;
+      }
+      tokenId = _publicSV.current();
+      if (_publicSV.current() < SV_MAX) {
+        _publicSV.increment();
+        _safeMint(msg.sender, tokenId);
+      }
+      i++;
+    }
+
+    tokensCount[msg.sender]['genesis'] = genesisTokenCount;
+    tokensCount[msg.sender]['platinum'] = platinumTokenCount;
+    tokensCount[msg.sender]['gold'] = goldTokenCount;
+    tokensCount[msg.sender]['silver'] = silverTokenCount;
+    tokensCount[msg.sender]['bronze'] = bronzeTokenCount;
+  }
+
   function claim(uint256 claimedCount) external nonReentrant {
     require(block.timestamp >= _activeDateTime, "Distribution doesn't start yet");
     require(block.timestamp <= _activeDateTime + 86400 * 7, "Distribution is ended");
@@ -123,23 +173,11 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     uint256 silverTokenCount = ooffToken.balanceOf(msg.sender, 2);
     uint256 bronzeTokenCount = ooffToken.balanceOf(msg.sender, 3);
 
-    uint256 tokensCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 maxCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
     uint256 i = 0;
     uint256 tokenId;
 
-    // if(passedDays == 1) {
-    //   require(genesisTokenCount >= claimedCount, "User doesn't have enough token to claim");
-    // } else if (passedDays == 2) {
-    //   require(genesisTokenCount + platinumTokenCount >= claimedCount, "User doesn't have enough token to claim");
-    // } else if (passedDays == 3) {
-    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount >= claimedCount, "User doesn't have enough token to claim");
-    // } else if (passedDays == 4) {
-    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount >= claimedCount, "User doesn't have enough token to claim");
-    // } else if (passedDays == 5) {
-    //   require(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount >= claimedCount, "User doesn't have enough token to claim");
-    // }
-
-    while(i < tokensCount) {
+    while(i < maxCount) {
       if(genesisToken.balanceOf(msg.sender) > 0) {
         tokenId = genesisToken.tokenOfOwnerByIndex(msg.sender, i);
         genesisToken.safeTransferFrom(msg.sender, address(this), tokenId);
