@@ -19,4 +19,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
+  gasReporter: {
+    enabled: true,
+    currency: 'CHF',
+    gasPrice: 21,
+    showMethodSig: true,
+    coinmarketcap: '2f10f12d-9de0-4b8d-8991-42c4d9ee17f1'
+  }
 };

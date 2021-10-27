@@ -39,8 +39,9 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
 
   Counters.Counter private _publicSV;
 
-  constructor() ERC721("SatoshiVerse", "SV") {
-
+  constructor(address test721, address test1155) ERC721("SatoshiVerse", "SV") {
+    gensisAddress = test721;
+    ooffAddress = test1155;
   }
 
   function _daysSince() internal view returns (uint256) {
@@ -107,8 +108,8 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     }
   }
 
-  function max(uint a, uint b) private pure returns (uint) {
-    return a > b ? a : b;
+  function min(uint a, uint b) private pure returns (uint) {
+    return a < b ? a : b;
   }
 
   function seed(address user, string memory tokenType, uint256 count) external onlyOwner {
@@ -128,11 +129,11 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     uint256 silverTokenCount = tokensCount[msg.sender]['silver'];
     uint256 bronzeTokenCount = tokensCount[msg.sender]['bronze'];
 
-    uint256 maxCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
     uint256 i = 0;
     uint256 tokenId;
 
-    while(i < maxCount) {
+    while(i < minCount) {
       if(genesisTokenCount > 0) {
         genesisTokenCount--;
       } else if (passedDays >= 2 && platinumTokenCount > 0) {
@@ -173,22 +174,29 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     uint256 silverTokenCount = ooffToken.balanceOf(msg.sender, 2);
     uint256 bronzeTokenCount = ooffToken.balanceOf(msg.sender, 3);
 
-    uint256 maxCount = max(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
     uint256 i = 0;
     uint256 tokenId;
 
-    while(i < maxCount) {
-      if(genesisToken.balanceOf(msg.sender) > 0) {
+    bytes memory emptyBytesdata = ""; 
+
+    while(i < minCount) {
+      // if(genesisToken.balanceOf(msg.sender) > 0) {
+      if(i < 5) {
         tokenId = genesisToken.tokenOfOwnerByIndex(msg.sender, i);
-        genesisToken.safeTransferFrom(msg.sender, address(this), tokenId);
-      } else if (passedDays >= 2 && ooffToken.balanceOf(msg.sender, 1) > 0) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 1, 1, "");
-      } else if (passedDays >= 3 && ooffToken.balanceOf(msg.sender, 4) > 0) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 4, 1, "");
-      } else if (passedDays >= 4 && ooffToken.balanceOf(msg.sender, 2) > 0) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 2, 1, "");
-      } else if (passedDays >= 5 && ooffToken.balanceOf(msg.sender, 3) > 0) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 3, 1, "");
+        genesisToken.safeTransferFrom(msg.sender, address(this), 1, emptyBytesdata);
+      // } else if (passedDays >= 2 && ooffToken.balanceOf(msg.sender, 1) > 0) {
+      } else if (passedDays >= 2 && i >= 5 && i < 10) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 1, 1, emptyBytesdata);
+      // } else if (passedDays >= 3 && ooffToken.balanceOf(msg.sender, 4) > 0) {
+      } else if (passedDays >= 3 && i >= 10 && i < 15) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 4, 1, emptyBytesdata);
+      // } else if (passedDays >= 4 && ooffToken.balanceOf(msg.sender, 2) > 0) {
+      } else if (passedDays >= 4 && i >= 15 && i < 20) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 2, 1, emptyBytesdata);
+      // } else if (passedDays >= 5 && ooffToken.balanceOf(msg.sender, 3) > 0) {
+      } else if (passedDays >= 5 && i >= 20 && i < 25) {
+        ooffToken.safeTransferFrom(msg.sender, address(this), 3, 1, emptyBytesdata);
       }
 
       tokenId = _publicSV.current();
