@@ -21,9 +21,15 @@ module.exports = {
   solidity: "0.8.4",
   gasReporter: {
     enabled: true,
-    currency: 'CHF',
-    gasPrice: 21,
+    currency: 'USD',
+    gasPrice: 1,
     showMethodSig: true,
     coinmarketcap: '2f10f12d-9de0-4b8d-8991-42c4d9ee17f1'
+  },
+  defaultNetwork: "hardhat",
+  networks: {
+    hardhat: {
+      // allowUnlimitedContractSize: true
+    },
   }
 };

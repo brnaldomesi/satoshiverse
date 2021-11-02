@@ -2,108 +2,55 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 // Sale contract
 contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
-  using Counters for Counters.Counter;
-  using Strings for uint256;
-
-  address gensisAddress = 0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8;
-  address ooffAddress = 0x1d9545f79e40DC463da094d1eE138668670eeB19;
+  address payable svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
   
-  uint256 public SV_MAX = 9999;
-  uint256 public PURCHASE_LIMIT = 1;
-  uint256 public PRICE = 70_000_000_000_000_000; // 0.07 ETH
+  uint16[] publicRandomArr;
+  uint16[] presaleRandomArr;
+  uint16 _preSaleSV = 1;
+  uint16 _publicSV = 5001;
 
+  uint256 public SV_MAX = 10000;
   uint256 private _activeDateTime = 1636905600; // November 14th at 11:00 AM EST
   uint256 constant INTERVAL = 3600;
+  uint256 randNonce = 0;
 
-  string private _contractURI = "";
-  string private _tokenBaseURI1 = "";
-  string private _tokenBaseURI2 = "";
-  string private _tokenBaseURI3 = "";
-  string private _tokenBaseURI4 = "";
-  string private _tokenBaseURI5 = "";
-  string private _tokenBaseURI6 = "";
+  bool windowState = true;
+  bool revealState;
 
   mapping(address => mapping(string => uint256)) public tokensCount;
-
-  Counters.Counter private _publicSV;
-
-  constructor(address test721, address test1155) ERC721("SatoshiVerse", "SV") {
-    gensisAddress = test721;
-    ooffAddress = test1155;
+  mapping(address => uint256) public purchaseLimit;
+  
+  constructor() ERC721("SatoshiVerse", "SV") {
+    
   }
 
   function _daysSince() internal view returns (uint256) {
     unchecked {
       uint256 passedTime = (block.timestamp - _activeDateTime) / INTERVAL;
       if(passedTime <= 6) {
-        return 1;
+        return 0;
       } else if( passedTime <= 24) {
-        return 2;
+        return 1;
       } else if( passedTime <= 48 ) {
-        return 3;
+        return 2;
       } else if( passedTime <=72 ) {
+        return 3;
+      } else if( passedTime <= 96 ) {
         return 4;
-      } else{
+      } else if( passedTime <= 120 ) {
         return 5;
-      }
-    }
-  }
-
-  function setActiveDateTime(uint256 activeDateTime) external onlyOwner {
-    _activeDateTime = activeDateTime;
-  }
-
-  function setContractURI(string memory URI) external onlyOwner {
-    _contractURI = URI;
-  }
-
-  function setBaseURI(
-    string memory URI1,
-    string memory URI2,
-    string memory URI3,
-    string memory URI4,
-    string memory URI5,
-    string memory URI6
-  ) external onlyOwner {
-    if (bytes(URI1).length != 0) _tokenBaseURI1 = URI1;
-    if (bytes(URI2).length != 0) _tokenBaseURI2 = URI2;
-    if (bytes(URI3).length != 0) _tokenBaseURI3 = URI3;
-    if (bytes(URI4).length != 0) _tokenBaseURI4 = URI4;
-    if (bytes(URI5).length != 0) _tokenBaseURI5 = URI5;
-    if (bytes(URI6).length != 0) _tokenBaseURI6 = URI6;
-  }
-
-  function setMintPrice(uint256 mintPrice) external onlyOwner {
-    PRICE = mintPrice;
-  }
-
-  function getPurchaseLimit() external returns(uint256) {
-    
-  }
-
-  function setMaxLimit(uint256 maxLimit) external onlyOwner {
-    SV_MAX = maxLimit;
-  }
-
-  function gift(address to, uint256 numberOfTokens) external onlyOwner {
-    for (uint256 i = 0; i < numberOfTokens; i++) {
-      uint256 tokenId = _publicSV.current();
-
-      if (_publicSV.current() < SV_MAX) {
-        _publicSV.increment();
-        _safeMint(to, tokenId);
+      } else if( passedTime <= 144 ) {
+        return 6;
+      } else if( passedTime <= 168 ) {
+        return 7;
+      } else {
+        return 8;
       }
     }
   }
@@ -112,44 +59,54 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     return a < b ? a : b;
   }
 
-  function seed(address user, string memory tokenType, uint256 count) external onlyOwner {
+  function seedPresaleWhiteList(address user, string memory tokenType, uint256 count) external onlyOwner {
     require(msg.sender != address(0), "Invalid user address");
     tokensCount[user][tokenType] += count;
   }
 
-  function claim1(uint256 claimedCount) external nonReentrant {
-    require(block.timestamp >= _activeDateTime, "Distribution doesn't start yet");
-    require(block.timestamp <= _activeDateTime + 86400 * 7, "Distribution is ended");
+  function seedPublicWhiteList(address user, uint256 count) external onlyOwner {
+    require(msg.sender != address(0), "Invalid user address");
+    purchaseLimit[user] += count;
+  }
 
+  function claim(uint256 claimedCount) external nonReentrant {
+    require(windowState, "Claim disabled");
+    require(block.timestamp >= _activeDateTime, "Presale not start yet");
+    
     uint256 passedDays = _daysSince();
 
     uint256 genesisTokenCount = tokensCount[msg.sender]['genesis'];
     uint256 platinumTokenCount = tokensCount[msg.sender]['platinum'];
     uint256 goldTokenCount = tokensCount[msg.sender]['gold'];
     uint256 silverTokenCount = tokensCount[msg.sender]['silver'];
-    uint256 bronzeTokenCount = tokensCount[msg.sender]['bronze'];
 
-    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
+    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount, claimedCount);
     uint256 i = 0;
     uint256 tokenId;
 
     while(i < minCount) {
       if(genesisTokenCount > 0) {
         genesisTokenCount--;
-      } else if (passedDays >= 2 && platinumTokenCount > 0) {
+      } else if (passedDays >= 1 && platinumTokenCount > 0) {
         platinumTokenCount--;
-      } else if (passedDays >= 3 && goldTokenCount > 0) {
+      } else if (passedDays >= 2 && goldTokenCount > 0) {
         goldTokenCount--;
-      } else if (passedDays >= 4 && silverTokenCount > 0) {
+      } else if (passedDays >= 3 && silverTokenCount > 0) {
         silverTokenCount--;
-      } else if (passedDays >= 5 && bronzeTokenCount > 0) {
-        bronzeTokenCount--;
       }
-      tokenId = _publicSV.current();
-      if (_publicSV.current() < SV_MAX) {
-        _publicSV.increment();
-        _safeMint(msg.sender, tokenId);
+
+      if(revealState) {
+        uint256 randomIndex = getRandomIndex(presaleRandomArr.length);
+        tokenId = presaleRandomArr[randomIndex];
+        presaleRandomArr[randomIndex] = presaleRandomArr[presaleRandomArr.length - 1];
+        publicRandomArr.pop();
+      } else {
+        tokenId = _preSaleSV;
+        require(tokenId <= SV_MAX / 2, "No legionnaires left for presale");
+        _preSaleSV++;
       }
+      
+      _safeMint(msg.sender, tokenId);
       i++;
     }
 
@@ -157,89 +114,74 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     tokensCount[msg.sender]['platinum'] = platinumTokenCount;
     tokensCount[msg.sender]['gold'] = goldTokenCount;
     tokensCount[msg.sender]['silver'] = silverTokenCount;
-    tokensCount[msg.sender]['bronze'] = bronzeTokenCount;
   }
 
-  function claim(uint256 claimedCount) external nonReentrant {
-    require(block.timestamp >= _activeDateTime, "Distribution doesn't start yet");
-    require(block.timestamp <= _activeDateTime + 86400 * 7, "Distribution is ended");
-    
+  function purchase(uint256 count) external payable nonReentrant {
+    require(windowState, "Purchase disabled");
+    require(block.timestamp >= _activeDateTime, "Sale not start yet");
     uint256 passedDays = _daysSince();
-    IERC721Enumerable genesisToken = IERC721Enumerable(gensisAddress);
-    IERC1155 ooffToken = IERC1155(ooffAddress);
+    require(passedDays > 3, "Public sale not start yet");
+    require(msg.value >= count * .1 ether, "Not enough ether");
+    
+    uint256 limit; 
+    if(passedDays < 5) {
+      limit = purchaseLimit[msg.sender];
+      require(limit > 0 && limit < 3, "Not allowed to purchase");
+      
+      if(count < limit) {
+        purchaseLimit[msg.sender] -= count;
+        limit = count;
+      } else {
+        purchaseLimit[msg.sender] = 0;
+      }
+    } else {
+      limit = count;
+    }
 
-    uint256 genesisTokenCount = genesisToken.balanceOf(msg.sender);
-    uint256 platinumTokenCount = ooffToken.balanceOf(msg.sender, 1);
-    uint256 goldTokenCount = ooffToken.balanceOf(msg.sender, 4);
-    uint256 silverTokenCount = ooffToken.balanceOf(msg.sender, 2);
-    uint256 bronzeTokenCount = ooffToken.balanceOf(msg.sender, 3);
-
-    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount + bronzeTokenCount, claimedCount);
-    uint256 i = 0;
     uint256 tokenId;
-
-    bytes memory emptyBytesdata = ""; 
-
-    while(i < minCount) {
-      // if(genesisToken.balanceOf(msg.sender) > 0) {
-      if(i < 5) {
-        tokenId = genesisToken.tokenOfOwnerByIndex(msg.sender, i);
-        genesisToken.safeTransferFrom(msg.sender, address(this), 1, emptyBytesdata);
-      // } else if (passedDays >= 2 && ooffToken.balanceOf(msg.sender, 1) > 0) {
-      } else if (passedDays >= 2 && i >= 5 && i < 10) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 1, 1, emptyBytesdata);
-      // } else if (passedDays >= 3 && ooffToken.balanceOf(msg.sender, 4) > 0) {
-      } else if (passedDays >= 3 && i >= 10 && i < 15) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 4, 1, emptyBytesdata);
-      // } else if (passedDays >= 4 && ooffToken.balanceOf(msg.sender, 2) > 0) {
-      } else if (passedDays >= 4 && i >= 15 && i < 20) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 2, 1, emptyBytesdata);
-      // } else if (passedDays >= 5 && ooffToken.balanceOf(msg.sender, 3) > 0) {
-      } else if (passedDays >= 5 && i >= 20 && i < 25) {
-        ooffToken.safeTransferFrom(msg.sender, address(this), 3, 1, emptyBytesdata);
+    for (uint256 i = 0; i < limit; i++) {
+      if(revealState) {
+        uint256 randomIndex = getRandomIndex(publicRandomArr.length);
+        tokenId = publicRandomArr[randomIndex];
+        publicRandomArr[randomIndex] = publicRandomArr[publicRandomArr.length - 1];
+        publicRandomArr.pop();
+      } else {
+        tokenId = _publicSV;
+        require(tokenId <= SV_MAX, "No legionnaires left for public sale");
+        _publicSV++;
       }
+      
+      _safeMint(msg.sender, tokenId);
+    }
 
-      tokenId = _publicSV.current();
-      if (_publicSV.current() < SV_MAX) {
-        _publicSV.increment();
-        _safeMint(msg.sender, tokenId);
-      }
-      i++;
+    (bool sent, ) = svEthAddr.call{ value: limit * .1 ether }("");
+    require(sent, "Failed to send Ether");
+
+    if(msg.value > count * .1 ether) {
+      (sent, ) = payable(msg.sender).call{ value: msg.value - limit * .1 ether }("");
+      require(sent, "Failed to send Ether change back to user");
     }
   }
 
-  function contractURI() public view returns (string memory) {
-    return _contractURI;
+  function setWindowState(bool _windowState) external onlyOwner {
+    windowState = _windowState;
   }
 
-  function tokenURI(uint256 tokenId)
-    public
-    view
-    override(ERC721)
-    returns (string memory)
-  {
-    require(_exists(tokenId), "Token does not exist");
-
-    if (tokenId >= 0 && tokenId < 5000) {
-      return string(abi.encodePacked(_tokenBaseURI1, tokenId.toString()));
-    } else if (tokenId >= 5000 && tokenId < 10000) {
-      return string(abi.encodePacked(_tokenBaseURI2, tokenId.toString()));
-    } else if (tokenId >= 10000 && tokenId < 15000) {
-      return string(abi.encodePacked(_tokenBaseURI3, tokenId.toString()));
-    } else if (tokenId >= 15000 && tokenId < 20000) {
-      return string(abi.encodePacked(_tokenBaseURI4, tokenId.toString()));
-    } else if (tokenId >= 20000 && tokenId < 25000) {
-      return string(abi.encodePacked(_tokenBaseURI5, tokenId.toString()));
-    } else if (tokenId >= 25000 && tokenId < 30000) {
-      return string(abi.encodePacked(_tokenBaseURI6, tokenId.toString()));
+  function startReveal() external onlyOwner {
+    revealState = true;
+    uint16 i;
+    
+    for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
+      presaleRandomArr.push(i);
     }
 
-    return "";
+    for(i = _publicSV ; i < SV_MAX + 1; i++) {
+      publicRandomArr.push(i);
+    }
   }
 
-  function withdraw() external onlyOwner {
-    uint256 balance = address(this).balance;
-
-    payable(msg.sender).transfer(balance);
+  function getRandomIndex(uint256 range) internal returns(uint256) {
+    randNonce++;
+    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
   }
 }
