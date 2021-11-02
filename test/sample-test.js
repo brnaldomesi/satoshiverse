@@ -62,7 +62,7 @@ describe("SatoshiVerse", function () {
       expect(await this.satoshiVerse.tokensCount(this.user.address, 'silver')).to.equal(2);
     });
 
-    it("After reveal claim and purchase", async function() {
+    it("Claim and purchase after reveal", async function() {
       await this.satoshiVerse.startReveal();
       await this.satoshiVerse.connect(this.user).claim(1);
       expect(await this.satoshiVerse.balanceOf(this.user.address)).to.equal(26);

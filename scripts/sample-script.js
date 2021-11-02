@@ -19,7 +19,7 @@ async function main() {
 
   await satoshiVerse.deployed();
 
-  console.log("Greeter deployed to:", satoshiVerse.address);
+  console.log("SatoshiVerse deployed to:", satoshiVerse.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

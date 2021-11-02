@@ -17,7 +17,7 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
 
   uint256 public SV_MAX = 10000;
   uint256 private _activeDateTime = 1636905600; // November 14th at 11:00 AM EST
-  uint256 constant INTERVAL = 3600;
+  uint256 INTERVAL = 3600;
   uint256 randNonce = 0;
 
   bool windowState = true;
@@ -159,8 +159,16 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
 
     if(msg.value > count * .1 ether) {
       (sent, ) = payable(msg.sender).call{ value: msg.value - limit * .1 ether }("");
-      require(sent, "Failed to send Ether change back to user");
+      require(sent, "Failed to send change back to user");
     }
+  }
+
+  function setActiveDateTime(uint256 activeDateTime) external onlyOwner {
+    _activeDateTime = activeDateTime;
+  }
+
+  function setInterval(uint256 interval) external onlyOwner {
+    INTERVAL = interval;
   }
 
   function setWindowState(bool _windowState) external onlyOwner {
