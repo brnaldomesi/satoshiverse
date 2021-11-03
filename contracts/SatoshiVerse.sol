@@ -180,9 +180,7 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
   }
 
   function startReveal() external onlyOwner {
-    revealState = true;
     uint16 i;
-    
     for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
       presaleRandomArr.push(i);
     }
@@ -190,6 +188,8 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     for(i = _publicSV ; i < SV_MAX + 1; i++) {
       publicRandomArr.push(i);
     }
+    
+    revealState = true;
   }
 
   function getRandomIndex(uint256 range) internal returns(uint256) {
