@@ -14,13 +14,12 @@ describe("SatoshiVerse", function () {
     const SatoshiVerse = await ethers.getContractFactory("SatoshiVerse");
     this.satoshiVerse = await SatoshiVerse.deploy();
     await this.satoshiVerse.deployed();
-    await this.satoshiVerse.seedPresaleWhiteList(this.user.address, 'genesis', 5);
-    await this.satoshiVerse.seedPresaleWhiteList(this.user.address, 'platinum', 5);
-    await this.satoshiVerse.seedPresaleWhiteList(this.user.address, 'gold', 5);
-    await this.satoshiVerse.seedPresaleWhiteList(this.user.address, 'silver', 5);
+    await this.satoshiVerse.seedPresaleWhiteList([this.user.address, this.alice.address], 'genesis', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.user.address, this.alice.address], 'platinum', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.user.address, this.alice.address], 'gold', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.user.address, this.alice.address], 'silver', [5,5]);
 
-    await this.satoshiVerse.seedPublicWhiteList(this.user.address, 2);
-    await this.satoshiVerse.seedPublicWhiteList(this.alice.address, 1);
+    await this.satoshiVerse.seedPublicWhiteList([this.user.address, this.alice.address], [2, 1]);
   });
 
   describe("Claim and Purchase", function() {

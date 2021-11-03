@@ -59,14 +59,18 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     return a < b ? a : b;
   }
 
-  function seedPresaleWhiteList(address user, string memory tokenType, uint256 count) external onlyOwner {
+  function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint256[] calldata counts) external onlyOwner {
     require(msg.sender != address(0), "Invalid user address");
-    tokensCount[user][tokenType] += count;
+    for(uint256 i = 0; i < users.length; i++) {
+      tokensCount[users[i]][tokenType] += counts[i];
+    }
   }
 
-  function seedPublicWhiteList(address user, uint256 count) external onlyOwner {
+  function seedPublicWhiteList(address[] calldata users, uint256[] calldata counts) external onlyOwner {
     require(msg.sender != address(0), "Invalid user address");
-    purchaseLimit[user] += count;
+    for(uint256 i = 0; i < users.length; i++) {
+      purchaseLimit[users[i]] += counts[i];
+    }
   }
 
   function claim(uint256 claimedCount) external nonReentrant {
