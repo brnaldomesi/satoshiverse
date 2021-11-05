@@ -1,4 +1,7 @@
 //SPDX-License-Identifier: Unlicense
+
+
+
 // Todo clean this up spaces. 
   // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*,,,,,,,,,,,,&&&&&&&&&&&&&&&&(,,,,,,,,,,,/,,,,,,,,,,,,,****,,,,,,,,,,,,,,,,,,,.                                          
   // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,**,,,,,,,,,,,,,,(,/****/**********,,,,,,,,,,,,,,,,,,,.                                          
@@ -62,7 +65,14 @@
 
 
 
-
+/*
+* Gas optimization 
+*
+*
+*
+*
+*
+*/ 
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
@@ -80,8 +90,8 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
   uint16 _publicSV = 5001;
 
   uint256 public SV_MAX = 10000;
-  // change blockheight to nov 20th
-  uint256 private _activeDateTime = 1636905600; // November 20th at 11:00 AM EST
+  
+  uint256 private _activeDateTime = 1637384400; // November 20th at 11:00 AM EST
   uint256 INTERVAL = 3600;
   uint256 randNonce = 0;
 
@@ -139,6 +149,8 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
 
    /**
     * 
+    * potentially Add contract address for BitcoinAngel , ArtVaTar for whitelist , might be on the dapp
+    * f out the purchase limit when the user
     */
   function seedPublicWhiteList(address[] calldata users, uint256[] calldata counts) external onlyOwner {
     require(msg.sender != address(0), "Invalid user address");
@@ -147,6 +159,24 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     }
   }
 
+     /**
+     * @dev Sets the baseURI for {tokenURI}
+     * "https://ipfs.io/ipfs/"
+     */
+    function setBaseURI(string memory newBaseUri) public onlyOwner immutable {
+        _internalBaseURI = newBaseUri;
+    }
+
+  /**
+  *  
+  */ 
+
+  function setPreRevealTokenURIs(uint16[] memory tokenIds, string[] memory _tokenURIs) public onlyOwner {
+    require(tokenIds.length == _tokenURIs.length, "Set PreReveal Token Image");
+    for (uint16 i=0; i<tokenIds.length; i=i+1) {
+      super._setTokenURI(tokenIds[i], _tokenURIs[i]);
+    }
+  }
 
    /**
      * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
@@ -158,16 +188,13 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
         }
     }
 
-     /**
-     * @dev Sets the baseURI for {tokenURI}
-     */
-    function setBaseURI(string memory newBaseUri) public onlyOwner {
-        _internalBaseURI = newBaseUri;
-    }
-
     /**
+    * User Claims their Legionnaire based on their holding
+    * TODOs
     * 
+    *
     */
+
   function claim(uint256 claimedCount) external nonReentrant {
     require(windowState, "Claim disabled");
     require(block.timestamp >= _activeDateTime, "Presale not start yet");
@@ -214,7 +241,26 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
     tokensCount[msg.sender]['gold'] = goldTokenCount;
     tokensCount[msg.sender]['silver'] = silverTokenCount;
   }
+
+  /**
+  *  TODO finalize function
+  */
+  function toggleClaim() public onlyOwner {
+    claimsOpen = !claimOpen;
+  } 
+
+
+  /** 
+  * Finalize function if necessary for gas optimization 
+  */ 
+
+  function batchClaim(uint16 claimedCount) external nonReentrant{
+
+  }
+
    /**
+    * TODO 
+    * Add purchase limit of 2 legionnaires 
     * 
     */
   function purchase(uint256 count) external payable nonReentrant {
@@ -263,6 +309,25 @@ contract SatoshiVerse is ERC721Enumerable, Ownable, ReentrancyGuard {
       require(sent, "Failed to send change back to user");
     }
   }
+
+  /** 
+  * TODO finalize function
+  */ 
+  function togglePurchase() public onlyOwner {
+    salesOpen = !salesOpen;
+  }
+
+  /**
+  * Finalize function for gas optimization
+  */
+
+  function batchPurchase(uint16 count) external payable nonReentrant {
+
+
+  }
+
+
+
    /**
     * 
     */
