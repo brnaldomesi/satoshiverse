@@ -8,9 +8,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
 import "./tokens/Legionnaire.sol";
+import "./lib/Operatorable.sol";
 
 // Sale contract
-contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
+contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   Legionnaire public immutable legionnaire;
 
   address payable svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
@@ -34,7 +35,6 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
   uint256 internal fee;
   bytes32 internal keyHash;
   
-  bool windowState = true;
   bool revealState;
 
   bytes32 requestId;
@@ -86,7 +86,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     return a < b ? a : b;
   }
 
-  function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOwner {
+  function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOperator {
     require(msg.sender != address(0), "Invalid user address");
     require(users.length == counts.length, "Mismatched presale addresses and counts");
 
@@ -95,7 +95,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     }
   }
 
-  function seedPublicWhiteList(address[] calldata users, uint8[] calldata counts) external onlyOwner {
+  function seedPublicWhiteList(address[] calldata users, uint8[] calldata counts) external onlyOperator {
     require(msg.sender != address(0), "Invalid user address");
     require(users.length == counts.length, "Mismatched public addresses and counts");
 
@@ -104,8 +104,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     }
   }
 
-  function claim(uint256 claimedCount) external nonReentrant {
-    require(windowState, "Claim disabled");
+  function claim(uint256 claimedCount) external whenNotPaused nonReentrant {
     require(block.timestamp >= _activeDateTime, "Presale not start yet");
     
     uint8 genesisTokenCount = tokensCount[msg.sender]['genesis'];
@@ -151,8 +150,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     tokensCount[msg.sender]['silver'] = silverTokenCount;
   }
 
-  function purchase(uint256 count) external payable nonReentrant {
-    require(windowState, "Purchase disabled");
+  function purchase(uint256 count) external payable whenNotPaused nonReentrant {
     require(block.timestamp >= _activeDateTime, "Sale not start yet");
     uint256 passedDays = _daysSince();
     require(passedDays > 3, "Public sale not start yet");
@@ -206,10 +204,6 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     INTERVAL = interval;
   }
 
-  function setWindowState(bool _windowState) external onlyOwner {
-    windowState = _windowState;
-  }
-
   function startReveal() external onlyOwner {
     uint16 i;
     for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
@@ -228,7 +222,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
   }
 
-  function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOwner {
+  function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOperator {
     require(revealState, "Have to reveal");
 
     calledTimesForTokenURI++;
@@ -239,7 +233,7 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
     delete tokenIdsForBatch;
     delete ipfsURIsForBatch;
 
-    for(uint16 i = 0; i < _tokenIds.length; i++) {
+    for(uint256 i = 0; i < _tokenIds.length; i++) {
       tokenIdsForBatch.push(_tokenIds[i]);
       ipfsURIsForBatch.push(_tokenURIs[i]);
     }
@@ -254,7 +248,6 @@ contract SatoshiVerse is VRFConsumerBase, Ownable, ReentrancyGuard {
         uint256 length = tokenIdsForBatch.length;
         uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, _randomness))) % length;
         legionnaire.setTokenURI(tokenIdsForBatch[length - 1], ipfsURIsForBatch[randomIndex]);
-
 
         ipfsURIsForBatch[randomIndex] = ipfsURIsForBatch[length - 1];
         tokenIdsForBatch.pop();
