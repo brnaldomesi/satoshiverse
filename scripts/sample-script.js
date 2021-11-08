@@ -26,8 +26,13 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
+  const Legionnaire = await hre.ethers.getContractFactory("Legionnaire");
+  const legionnaire = await Legionnaire.deploy();
+  await legionnaire.deployed();
+
   const SatoshiVerse = await hre.ethers.getContractFactory("SatoshiVerse");
   const satoshiVerse = await SatoshiVerse.deploy(
+    legionnaire.address,
     chainlinkConf.rinkeby.vrfCoordinator,
     chainlinkConf.rinkeby.link,
     chainlinkConf.rinkeby.keyHash,
