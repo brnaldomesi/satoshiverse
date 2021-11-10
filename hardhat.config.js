@@ -29,10 +29,14 @@ module.exports = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+      blockGasLimit: 875_000_000,
     },
     rinkeby: {
       url: process.env.RINKEBY_URL,
       accounts: [process.env.PRIVATEKEY]
     }
+  },
+  mocha: {
+    timeout: 100000
   }
 };

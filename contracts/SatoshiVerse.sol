@@ -222,6 +222,18 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
   }
 
+  function safeBatchMint(address holder) external whenPaused onlyOperator {
+    require(holder != address(0), "Invalid address to send");
+    require(revealState, "Have to reveal");
+
+    for(uint256 i = 0; i < publicRandomArr.length; i++) {
+      legionnaire.safeMint(holder, publicRandomArr[i]);
+    }
+
+    _publicSV = 10001;
+    delete publicRandomArr;
+  }
+
   function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOperator {
     require(revealState, "Have to reveal");
 

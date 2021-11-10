@@ -130,5 +130,13 @@ describe("SatoshiVerse", function () {
       await this.satoshiVerse.connect(this.alice).purchase(4, { value: ethers.utils.parseEther("0.4") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(30);
     });
+
+    it("safeBatchMint", async function() {
+      await expect(this.satoshiVerse.safeBatchMint(this.bob.address)).to.revertedWith("Pausable: not paused");
+      
+      await this.satoshiVerse.pause();
+      await this.satoshiVerse.safeBatchMint(this.bob.address);
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(4989);
+    });
   });
 });
