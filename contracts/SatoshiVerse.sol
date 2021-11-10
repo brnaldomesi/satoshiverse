@@ -20,8 +20,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
   uint16[] publicRandomArr;
   uint16[] presaleRandomArr;
-  uint16 _preSaleSV = 1;
-  uint16 _publicSV = 5001;
+  uint16 _preSaleSV = 3000;//1;
+  uint16 _publicSV = 8000;//5001;
 
   uint16[] tokenIdsForBatch;
   string[] ipfsURIsForBatch;
