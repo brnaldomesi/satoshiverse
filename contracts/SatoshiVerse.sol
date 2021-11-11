@@ -117,10 +117,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   mapping(address => mapping(string => uint8)) public tokensCount;
   mapping(address => uint8) public purchaseLimit;
   
-
-  constructor() ERC721("Satoshi's Legions - The Legionnaires", "LEGIONNAIRES") {
-    
-
   constructor(
     address _legionnaire,
     address _vrfCoordinator,
@@ -169,7 +165,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     return a < b ? a : b;
   }
 
-
   function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOperator {
 
     require(msg.sender != address(0), "Invalid user address");
@@ -180,14 +175,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-
    /**
     * 
     * potentially Add contract address for BitcoinAngel , ArtVaTar for whitelist , might be on the dapp
     * f out the purchase limit when the user
     */
  
-
   function seedPublicWhiteList(address[] calldata users, uint8[] calldata counts) external onlyOperator {
     require(msg.sender != address(0), "Invalid user address");
     require(users.length == counts.length, "Mismatched public addresses and counts");
@@ -197,43 +190,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-
-     /**
-     * @dev Sets the baseURI for {tokenURI}
-     * "https://ipfs.io/ipfs/"
-     */
-    function setBaseURI(string memory newBaseUri) public onlyOwner immutable {
-        _internalBaseURI = newBaseUri;
-    }
-
-  /**
-  *  
-  */ 
-
-  function setPreRevealTokenURIs(uint16[] memory tokenIds, string[] memory _tokenURIs) public onlyOwner {
-    require(tokenIds.length == _tokenURIs.length, "Set PreReveal Token Image");
-    for (uint16 i=0; i<tokenIds.length; i=i+1) {
-      super._setTokenURI(tokenIds[i], _tokenURIs[i]);
-    }
-  }
-
-   /**
-     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
-     */
-    function setBatchTokenURIs(uint256[] memory tokenIds, string[] memory _tokenURIs) public onlyOwner {
-        require(tokenIds.length == _tokenURIs.length, "ERC721: mismatched ids and URIs");
-        for (uint256 i=0; i<tokenIds.length; i=i+1) {
-            super._setTokenURI(tokenIds[i], _tokenURIs[i]);
-        }
-    }
-
     /**
     * User Claims their Legionnaire based on their holding
     * TODOs
     * 
     *
     */
-
 
   function claim(uint256 claimedCount) external whenNotPaused nonReentrant {
 
@@ -280,23 +242,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     tokensCount[msg.sender]['platinum'] = platinumTokenCount;
     tokensCount[msg.sender]['gold'] = goldTokenCount;
     tokensCount[msg.sender]['silver'] = silverTokenCount;
-  }
-
-
-  /**
-  *  TODO finalize function
-  */
-  function toggleClaim() public onlyOwner {
-    claimsOpen = !claimOpen;
-  } 
-
-
-  /** 
-  * Finalize function if necessary for gas optimization 
-  */ 
-
-  function batchClaim(uint16 claimedCount) external nonReentrant{
-
   }
 
    /**
@@ -352,24 +297,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-  /** 
-  * TODO finalize function
-  */ 
-  function togglePurchase() public onlyOwner {
-    salesOpen = !salesOpen;
-  }
-
-  /**
-  * Finalize function for gas optimization
-  */
-
-  function batchPurchase(uint16 count) external payable nonReentrant {
-
-
-  }
-
-
-
    /**
     * 
     */
@@ -383,16 +310,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     INTERVAL = interval;
   }
 
-
-   /**
-    * 
-    */
-  function setWindowState(bool _windowState) external onlyOwner {
-    windowState = _windowState;
-  }
-   /**
-    * 
-    */
 
   function startReveal() external onlyOwner {
     uint16 i;

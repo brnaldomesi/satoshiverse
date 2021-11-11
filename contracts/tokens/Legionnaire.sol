@@ -8,7 +8,7 @@ import "../lib/Operatorable.sol";
 
 // Sale contract
 contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
-  constructor() ERC721("SatoshiVerse", "SV") 
+  constructor() ERC721("Satoshi's Legions - The Legionnaires", "LEGIONNAIRES")
   {
 
   }

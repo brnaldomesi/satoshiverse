@@ -41,6 +41,8 @@ describe("SatoshiVerse", function () {
     await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [5,5]);
 
     await this.satoshiVerse.seedPublicWhiteList([this.alice.address, this.bob.address], [2, 1]);
+
+    await this.satoshiVerse.setActiveDateTime(1636905600); // November 14th at 11:00 AM EST
   });
 
   describe('Operator', function() {
