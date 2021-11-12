@@ -89,11 +89,11 @@ describe("SatoshiVerse", function () {
         params: [Math.round(dateTime.getTime() / 1000)]
       });
 
-      await this.satoshiVerse.connect(this.alice).claim(50);
-      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(50);
+      await this.satoshiVerse.connect(this.alice).claim(1);
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(1);
 
-      await this.satoshiVerse.connect(this.alice).purchase(50, { value: ethers.utils.parseEther("5.0") });
-      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(100);
+      await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.1") });
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(2);
 
 
       const tokenURI = await this.legionnaire.connect(this.alice.address).tokenURI(1);

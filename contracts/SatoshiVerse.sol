@@ -251,8 +251,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
       legionnaire.safeMint(msg.sender, tokenId);
       // if(revealState) {
-        tokenURI = string(abi.encodePacked(baseURI, uint2str(drawIndexPresale())));
-        legionnaire.setTokenURI(tokenId, tokenURI);
+        // tokenURI = string(abi.encodePacked(baseURI, uint2str(drawIndexPresale()));
+        // legionnaire.setTokenURI(tokenId, tokenURI);
       // }
 
       i++;
@@ -335,7 +335,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       
       legionnaire.safeMint(msg.sender, tokenId);
       // if(revealState) {
-        tokenURI = string(abi.encodePacked(baseURI, uint2str(drawIndexPublic())));
+        tokenURI = string(abi.encodePacked(baseURI, "4999"/*uint2str(drawIndexPublic())*/));
         legionnaire.setTokenURI(tokenId, tokenURI);
       // }
     }
