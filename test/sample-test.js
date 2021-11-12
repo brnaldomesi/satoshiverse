@@ -35,17 +35,17 @@ describe("SatoshiVerse", function () {
     );
     await this.satoshiVerse.deployed();
     
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [50,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [50,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [50,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [50,50]);
 
     await this.satoshiVerse.seedPublicWhiteList([this.alice.address, this.bob.address], [2, 1]);
 
     await this.satoshiVerse.setActiveDateTime(1636905600); // November 14th at 11:00 AM EST
   });
 
-  describe('Operator', function() {
+  /*describe('Operator', function() {
     it('addOperator()', async function() {
       await this.legionnaire.addOperator(this.satoshiVerse.address);
       expect(await this.legionnaire.isOperator(this.satoshiVerse.address)).to.be.true;
@@ -77,9 +77,62 @@ describe("SatoshiVerse", function () {
           .to.be.revertedWith('Ownable: caller is not the owner');
       });
     });
+  });*/
+
+  describe("Test gas", function() {
+    it("Test draw index", async function() {
+      await this.legionnaire.addOperator(this.satoshiVerse.address);
+
+      dateTime.setTime(1637506800000) // After 6 days
+      await network.provider.request({
+        method: "evm_setNextBlockTimestamp",
+        params: [Math.round(dateTime.getTime() / 1000)]
+      });
+
+      await this.satoshiVerse.connect(this.alice).claim(50);
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(50);
+
+      await this.satoshiVerse.connect(this.alice).purchase(50, { value: ethers.utils.parseEther("5.0") });
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(100);
+
+
+      const tokenURI = await this.legionnaire.connect(this.alice.address).tokenURI(1);
+      console.log("tokenURI: ", tokenURI);
+
+      //await this.satoshiVerse.setBatchTokenURIs()
+
+      /*await this.satoshiVerse.connect(this.bob).claim(25);
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(25);
+
+      await this.satoshiVerse.connect(this.bob).purchase(25, { value: ethers.utils.parseEther("2.5") });
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(50);
+
+      await this.satoshiVerse.startReveal();
+
+      await this.satoshiVerse.connect(this.alice).claim(25);
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(75);
+
+      await this.satoshiVerse.connect(this.alice).purchase(25, { value: ethers.utils.parseEther("2.5") });
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(100);
+
+      await this.satoshiVerse.connect(this.bob).claim(25);
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(75);
+
+      await this.satoshiVerse.connect(this.bob).purchase(25, { value: ethers.utils.parseEther("2.5") });
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(100);*/
+
+      // for(let i = 0; i < 10; i++) {
+      //   await this.satoshiVerse.connect(this.alice).drawIndexPresale();
+      // }
+      // console.log("--------------------------------------------")
+      // for(let i = 0; i < 10; i++) {
+      //   await this.satoshiVerse.connect(this.alice).drawIndexPublic();
+      // }
+      
+    })
   });
 
-  describe("Claim and Purchase", function() {
+  /*describe("Claim and Purchase", function() {
     it("Purchase", async function() {
       dateTime.setTime(1637168400000); // November 17th at 12:00 PM EST
       await network.provider.request({
@@ -140,5 +193,5 @@ describe("SatoshiVerse", function () {
       await this.satoshiVerse.safeBatchMint(this.bob.address);
       expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(4989);
     });
-  });
+  });*/
 });

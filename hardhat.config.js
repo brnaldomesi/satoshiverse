@@ -19,6 +19,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
+  config: {
+    
+  },
   gasReporter: {
     enabled: true,
     currency: 'USD',
@@ -29,12 +32,13 @@ module.exports = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
+      //allowUnlimitedContractSize: true,
       blockGasLimit: 875_000_000,
     },
-    rinkeby: {
-      url: process.env.RINKEBY_URL,
-      accounts: [process.env.PRIVATEKEY]
-    }
+    // rinkeby: {
+    //   url: process.env.RINKEBY_URL,
+    //   accounts: [process.env.PRIVATEKEY]
+    // }
   },
   mocha: {
     timeout: 100000
