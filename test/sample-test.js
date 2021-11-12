@@ -139,5 +139,12 @@ describe("SatoshiVerse", function () {
       //await this.satoshiVerse.connect(this.alice).purchase(4, { value: ethers.utils.parseEther("0.4") });
       //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(30);
     });
+
+    it("setBatchTokenURIs", async function() {
+      //let tokenIds = [...Array(100).keys()];
+      //let tokenURIs = Array.apply(null, Array(100)).map(function (x, i) { return i.toString(); })
+      
+      await this.satoshiVerse.setBatchTokenURIs(/*tokenIds, tokenURIs*/);
+    })
   });
 });

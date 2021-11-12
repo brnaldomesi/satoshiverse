@@ -14,14 +14,14 @@ import "./lib/Operatorable.sol";
 contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   Legionnaire public immutable legionnaire;
 
-  address payable svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
+  address payable svEthAddr = payable(0x95532c83Db42B53B1E1c173A66D347C17E5E52CB); //payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
   
   uint8 calledTimesForTokenURI;
 
   uint16[] publicRandomArr;
   uint16[] presaleRandomArr;
-  uint16 _preSaleSV = 3000;//1;
-  uint16 _publicSV = 8000;//5001;
+  uint16 _preSaleSV = 4000;//1;
+  uint16 _publicSV = 9000;//5001;
 
   uint16[] tokenIdsForBatch;
   string[] ipfsURIsForBatch;
@@ -41,6 +41,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
   mapping(address => mapping(string => uint8)) public tokensCount;
   mapping(address => uint8) public purchaseLimit;
+
+  uint256 randomness;
+  string constant baseURI = "https://ipfs.io/ipfs/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz/";
   
   constructor(
     address _legionnaire,
@@ -116,7 +119,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
     uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount, claimedCount);
     uint256 i = 0;
+
     uint256 tokenId;
+    string memory tokenURI;
 
     while(i < minCount) {
       if(genesisTokenCount > 0) {
@@ -129,18 +134,21 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
         silverTokenCount--;
       }
 
+      tokenId = _preSaleSV;
+      require(tokenId <= SV_MAX / 2, "No legionnaires left for presale");
+      _preSaleSV++;
+
+      legionnaire.safeMint(msg.sender, tokenId);
+
       if(revealState) {
         uint256 randomIndex = getRandomIndex(presaleRandomArr.length);
-        tokenId = presaleRandomArr[randomIndex];
+        tokenURI = string(abi.encodePacked(baseURI, uint2str(presaleRandomArr[randomIndex])));
         presaleRandomArr[randomIndex] = presaleRandomArr[presaleRandomArr.length - 1];
         presaleRandomArr.pop();
-      } else {
-        tokenId = _preSaleSV;
-        require(tokenId <= SV_MAX / 2, "No legionnaires left for presale");
-        _preSaleSV++;
+
+        legionnaire.setTokenURI(tokenId, tokenURI);
       }
-      
-      legionnaire.safeMint(msg.sender, tokenId);
+
       i++;
     }
 
@@ -150,11 +158,16 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     tokensCount[msg.sender]['silver'] = silverTokenCount;
   }
 
+   /**
+    * TODO 
+    * Add purchase limit of 2 legionnaires 
+    * 
+    */
   function purchase(uint256 count) external payable whenNotPaused nonReentrant {
     require(block.timestamp >= _activeDateTime, "Sale not start yet");
     uint256 passedDays = _daysSince();
     require(passedDays > 3, "Public sale not start yet");
-    require(msg.value >= count * .1 ether, "Not enough ether");
+    require(msg.value >= count * .0000001 ether/*.1 ether*/, "Not enough ether");
     
     uint256 limit; 
     if(passedDays < 5) {
@@ -172,30 +185,59 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
 
     uint256 tokenId;
+    string memory tokenURI;
     for (uint256 i = 0; i < limit; i++) {
+      tokenId = _publicSV;
+      require(tokenId <= SV_MAX, "No legionnaires left for public sale");
+      _publicSV++;
+
+      legionnaire.safeMint(msg.sender, tokenId);
+
       if(revealState) {
         uint256 randomIndex = getRandomIndex(publicRandomArr.length);
-        tokenId = publicRandomArr[randomIndex];
+        tokenURI = string(abi.encodePacked(baseURI, uint2str(publicRandomArr[randomIndex])));
         publicRandomArr[randomIndex] = publicRandomArr[publicRandomArr.length - 1];
         publicRandomArr.pop();
-      } else {
-        tokenId = _publicSV;
-        require(tokenId <= SV_MAX, "No legionnaires left for public sale");
-        _publicSV++;
+
+        legionnaire.setTokenURI(tokenId, tokenURI);
       }
       
-      legionnaire.safeMint(msg.sender, tokenId);
     }
 
-    (bool sent, ) = svEthAddr.call{ value: limit * .1 ether }("");
+    (bool sent, ) = svEthAddr.call{ value: limit * .0000001 ether /*.1 ether*/ }("");
     require(sent, "Failed to send Ether");
 
-    if(msg.value > count * .1 ether) {
-      (sent, ) = payable(msg.sender).call{ value: msg.value - limit * .1 ether }("");
+    if(msg.value > count * .0000001 ether /*.1 ether*/) {
+      (sent, ) = payable(msg.sender).call{ value: msg.value - limit * .0000001 ether /*.1 ether*/ }("");
       require(sent, "Failed to send change back to user");
     }
   }
 
+  function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len;
+        while (_i != 0) {
+            k = k-1;
+            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+
+   /**
+    * 
+    */
   function setActiveDateTime(uint256 activeDateTime) external onlyOwner {
     _activeDateTime = activeDateTime;
   }
@@ -205,45 +247,105 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function startReveal() external onlyOwner {
+    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+    requestId = requestRandomness(keyHash, fee);
+
     uint16 i;
-    for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
+    for(i = 1 /*_preSaleSV*/; i < SV_MAX / 2 + 1; i++) {
       presaleRandomArr.push(i);
     }
 
-    for(i = _publicSV ; i < SV_MAX + 1; i++) {
+    for(i = 5001 /*_publicSV*/; i < SV_MAX + 1; i++) {
       publicRandomArr.push(i);
     }
-    
+
     revealState = true;
   }
 
+   /**
+    * 
+    */
   function getRandomIndex(uint256 range) internal returns(uint256) {
     randNonce++;
-    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
+    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomness))) % range;
   }
 
-  function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOperator {
+  function safeBatchMint(address holder) external whenPaused onlyOperator {
+    require(holder != address(0), "Invalid address to send");
+    require(revealState, "Have to reveal");
+
+    for(uint256 i = 0; i < publicRandomArr.length; i++) {
+      legionnaire.safeMint(holder, publicRandomArr[i]);
+    }
+
+    _publicSV = 10001;
+    delete publicRandomArr;
+  }
+
+  function setBatchTokenURIs(/*uint16[] memory _tokenIds, string[] memory _tokenURIs*/) external onlyOperator {
     require(revealState, "Have to reveal");
 
     calledTimesForTokenURI++;
-    require(calledTimesForTokenURI < 3, "Immutable");
-    require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
-    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+    //require(calledTimesForTokenURI < 50/*3*/, "Immutable");
+    //require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
 
-    delete tokenIdsForBatch;
-    delete ipfsURIsForBatch;
+    string memory tokenURI;
 
-    for(uint256 i = 0; i < _tokenIds.length; i++) {
+    uint256 i;
+    for(i = 4000/*1*/; i < _preSaleSV; i++) {
+      uint256 randomIndex = getRandomIndex(presaleRandomArr.length);
+      tokenURI = string(abi.encodePacked(baseURI, uint2str(presaleRandomArr[randomIndex])));
+      presaleRandomArr[randomIndex] = presaleRandomArr[presaleRandomArr.length - 1];
+      presaleRandomArr.pop();
+
+      legionnaire.setTokenURI(i, tokenURI);
+    }
+
+    for(i = 9000/*5001*/; i < _publicSV; i++) {
+      uint256 randomIndex = getRandomIndex(publicRandomArr.length);
+      tokenURI = string(abi.encodePacked(baseURI, uint2str(publicRandomArr[randomIndex])));
+      publicRandomArr[randomIndex] = publicRandomArr[publicRandomArr.length - 1];
+      publicRandomArr.pop();
+
+      legionnaire.setTokenURI(i, tokenURI);
+    }
+
+    //delete tokenIdsForBatch;
+    //delete ipfsURIsForBatch;
+
+    /*for(uint256 i = 0; i < _tokenIds.length; i++) {
+      randNonce++;
+
+      uint256 length = _tokenURIs.length - i;
+      uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomness))) % length;
+      legionnaire.setTokenURI(_tokenIds[i], _tokenURIs[randomIndex]);
+
+      _tokenURIs[randomIndex] = _tokenURIs[length - 1];
+    }
+
+    /*for(uint256 i = 0; i < _tokenIds.length; i++) {
+      randNonce++;
+
+      uint256 length = _tokenURIs.length - i;
+      uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomness))) % length;
+      legionnaire.setTokenURI(_tokenIds[i], _tokenURIs[randomIndex]);
+
+      _tokenURIs[randomIndex] = _tokenURIs[length - 1];
+    }*/
+
+    /*for(uint256 i = 0; i < _tokenIds.length; i++) {
       tokenIdsForBatch.push(_tokenIds[i]);
       ipfsURIsForBatch.push(_tokenURIs[i]);
     }
 
-    requestId = requestRandomness(keyHash, fee);
+    requestId = requestRandomness(keyHash, fee);*/
   }
 
   function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
     if(requestId == _requestId) {
-      randNonce++;
+      randomness = _randomness;
+
+      /*randNonce++;
       while(tokenIdsForBatch.length > 0) {
         uint256 length = tokenIdsForBatch.length;
         uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, _randomness))) % length;
@@ -252,7 +354,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
         ipfsURIsForBatch[randomIndex] = ipfsURIsForBatch[length - 1];
         tokenIdsForBatch.pop();
         ipfsURIsForBatch.pop();
-      }
+      }*/
     }
   }
 }

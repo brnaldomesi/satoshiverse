@@ -30,10 +30,10 @@ module.exports = {
   networks: {
     hardhat: {
     },
-    //rinkeby: {
-      //url: process.env.RINKEBY_URL,
-      //accounts: [process.env.PRIVATEKEY]
-    //},
+    /*rinkeby: {
+      url: process.env.RINKEBY_URL,
+      accounts: [process.env.PRIVATEKEY]
+    },*/
     kovan: {
       url: process.env.KOVAN_URL,
       accounts: [process.env.PRIVATEKEY]
