@@ -35,116 +35,133 @@ describe("SatoshiVerse", function () {
     );
     await this.satoshiVerse.deployed();
     
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [250,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [250,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [250,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [250,50]);
 
     await this.satoshiVerse.seedPublicWhiteList([this.alice.address, this.bob.address], [2, 1]);
+
+    await this.satoshiVerse.setActiveDateTime(1636905600); // November 14th at 11:00 AM EST
   });
 
-  describe('Operator', function() {
-    it('addOperator()', async function() {
-      await this.legionnaire.addOperator(this.satoshiVerse.address);
-      expect(await this.legionnaire.isOperator(this.satoshiVerse.address)).to.be.true;
-    });
-    it('removeOperator()', async function() {
-      await this.legionnaire.removeOperator(this.satoshiVerse.address);
-      expect(await this.legionnaire.isOperator(this.satoshiVerse.address)).to.be.false;
-    });
-    describe('reverts if', function() {
-      it('non-owner call', async function() {
-        await expect(this.legionnaire.connect(this.alice).addOperator(this.bob.address))
-          .to.be.revertedWith('Ownable: caller is not the owner');
-      });
-    });
-  });
+  // describe('Operator', function() {
+  //   it('addOperator()', async function() {
+  //     await this.legionnaire.addOperator(this.satoshiVerse.address);
+  //     expect(await this.legionnaire.isOperator(this.satoshiVerse.address)).to.be.true;
+  //   });
+  //   it('removeOperator()', async function() {
+  //     await this.legionnaire.removeOperator(this.satoshiVerse.address);
+  //     expect(await this.legionnaire.isOperator(this.satoshiVerse.address)).to.be.false;
+  //   });
+  //   describe('reverts if', function() {
+  //     it('non-owner call', async function() {
+  //       await expect(this.legionnaire.connect(this.alice).addOperator(this.bob.address))
+  //         .to.be.revertedWith('Ownable: caller is not the owner');
+  //     });
+  //   });
+  // });
 
-  describe('Pausability', function() {
-    /*it('pause()', async function() {
-      await this.satoshiVerse.pause();
-      expect(await this.satoshiVerse.paused()).to.be.true;
-    });
-    it('unpause()', async function() {
-      await this.satoshiVerse.unpause();
-      expect(await this.satoshiVerse.paused()).to.be.false;
-    });
-    describe('reverts if', async function() {
-      it('non-owner call', async function() {
-        await expect(this.satoshiVerse.connect(this.alice).pause())
-          .to.be.revertedWith('Ownable: caller is not the owner');
-      });
-    });*/
-  });
-
-  describe("Claim and Purchase", function() {
-    it("Purchase", async function() {
-      dateTime.setTime(1637168400000); // November 17th at 12:00 PM EST
-      await network.provider.request({
-        method: "evm_setNextBlockTimestamp",
-        params: [Math.round(dateTime.getTime() / 1000)]
-      });
-
-      //await expect(this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.1") }))
-      //  .to.be.revertedWith('Operatorable: CALLER_NO_OPERATOR_ROLE');
-
-      await this.legionnaire.addOperator(this.satoshiVerse.address);
-
-      //await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.1") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(1);
-
-      //await expect(this.satoshiVerse.purchase(2, { value: ethers.utils.parseEther("0.2") })).to.revertedWith("Not allowed to purchase");
-
-      //await this.satoshiVerse.connect(this.alice).purchase(5, { value: ethers.utils.parseEther("0.5") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(2);
-
-      //await expect(this.satoshiVerse.connect(this.alice).purchase(2, { value: ethers.utils.parseEther("0.1") })).to.revertedWith("Not enough ether");
-
-      dateTime.setTime(1637254800000); // November 18th at 12:00 PM EST
-      await network.provider.request({
-        method: "evm_setNextBlockTimestamp",
-        params: [Math.round(dateTime.getTime() / 1000)]
-      });
-      
-      //*await this.satoshiVerse.connect(this.alice).purchase(10, { value: ethers.utils.parseEther("1.0") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(10);
-
-      //await this.satoshiVerse.connect(this.alice).purchase(5, { value: ethers.utils.parseEther("0.7") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(7);
-    });
-
-    it("Claim", async function() {
+  describe('Custom test', function () {
+    it("Test", async function() {
       dateTime.setTime(1637506800000) // November 21th at 10:00 AM EST
       await network.provider.request({
         method: "evm_setNextBlockTimestamp",
         params: [Math.round(dateTime.getTime() / 1000)]
       });
-      //await this.satoshiVerse.connect(this.alice).claim(18);
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(25);
-      //expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(2);
 
-      //*await this.satoshiVerse.connect(this.alice).claim(10);
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(20);
-    });
+      await this.legionnaire.addOperator(this.satoshiVerse.address);
 
-    it("Claim and purchase after reveal", async function() {
-      //*await this.satoshiVerse.startReveal();
-      //await this.satoshiVerse.connect(this.alice).claim(10);
-      //await this.satoshiVerse.connect(this.alice).purchase(10, { value: ethers.utils.parseEther("1.0") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(20);
-
-      //await this.satoshiVerse.connect(this.alice).claim(1);
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(26);
-      //expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(1);
-      //await this.satoshiVerse.connect(this.alice).purchase(4, { value: ethers.utils.parseEther("0.4") });
-      //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(30);
-    });
-
-    it("setBatchTokenURIs", async function() {
-      //let tokenIds = [...Array(100).keys()];
-      //let tokenURIs = Array.apply(null, Array(100)).map(function (x, i) { return i.toString(); })
+      let tokenIds = [...Array(700).keys()];
+      tokenIds = tokenIds.map(n => n+1);
       
-      await this.satoshiVerse.setBatchTokenURIs(/*tokenIds, tokenURIs*/);
+      let tokenURIs = Array.apply(null, Array(700)).map(function (x, i) { return (i+1).toString(); })
+
+      await this.satoshiVerse.connect(this.alice).claim(700);
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(700);
+
+      await this.satoshiVerse.startReveal();
+      await this.satoshiVerse.setBatchTokenURIs(tokenIds, tokenURIs);
+
+      const tokenURI = await this.legionnaire.connect(this.alice.address).tokenURI(1);
+      console.log("tokenURI: ", tokenURI);
     })
-  });
+  })
+
+  // describe('Pausability', function() {
+  //   it('pause()', async function() {
+  //     await this.satoshiVerse.pause();
+  //     expect(await this.satoshiVerse.paused()).to.be.true;
+  //   });
+  //   it('unpause()', async function() {
+  //     await this.satoshiVerse.unpause();
+  //     expect(await this.satoshiVerse.paused()).to.be.false;
+  //   });
+  //   describe('reverts if', async function() {
+  //     it('non-owner call', async function() {
+  //       await expect(this.satoshiVerse.connect(this.alice).pause())
+  //         .to.be.revertedWith('Ownable: caller is not the owner');
+  //     });
+  //   });
+  // });
+
+  // describe("Claim and Purchase", function() {
+  //   it("Purchase", async function() {
+  //     dateTime.setTime(1637168400000); // November 17th at 12:00 PM EST
+  //     await network.provider.request({
+  //       method: "evm_setNextBlockTimestamp",
+  //       params: [Math.round(dateTime.getTime() / 1000)]
+  //     });
+
+  //     await expect(this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.1") }))
+  //      .to.be.revertedWith('Operatorable: CALLER_NO_OPERATOR_ROLE');
+
+  //     await this.legionnaire.addOperator(this.satoshiVerse.address);
+
+  //     await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.1") });
+  //     expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(1);
+
+  //     await expect(this.satoshiVerse.purchase(2, { value: ethers.utils.parseEther("0.2") })).to.revertedWith("Not allowed to purchase");
+
+  //     await this.satoshiVerse.connect(this.alice).purchase(5, { value: ethers.utils.parseEther("0.5") });
+  //     expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(2);
+
+  //     await expect(this.satoshiVerse.connect(this.alice).purchase(2, { value: ethers.utils.parseEther("0.1") })).to.revertedWith("Not enough ether");
+
+  //     dateTime.setTime(1637254800000); // November 18th at 12:00 PM EST
+  //     await network.provider.request({
+  //       method: "evm_setNextBlockTimestamp",
+  //       params: [Math.round(dateTime.getTime() / 1000)]
+  //     });
+
+  //     //await this.satoshiVerse.connect(this.alice).purchase(5, { value: ethers.utils.parseEther("0.7") });
+  //     //expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(7);
+  //   });
+
+  //   it("Claim", async function() {
+  //     dateTime.setTime(1637506800000) // November 21th at 10:00 AM EST
+  //     await network.provider.request({
+  //       method: "evm_setNextBlockTimestamp",
+  //       params: [Math.round(dateTime.getTime() / 1000)]
+  //     });
+  //     await this.satoshiVerse.connect(this.alice).claim(18);
+  //     expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(25);
+  //     expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(2);
+  //   });
+
+  //   it("Claim and purchase after reveal", async function() {
+  //     await this.satoshiVerse.connect(this.alice).claim(1);
+  //     expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(26);
+  //     expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(1);
+  //     await this.satoshiVerse.connect(this.alice).purchase(4, { value: ethers.utils.parseEther("0.4") });
+  //     expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(30);
+  //   });
+
+  //   it("setBatchTokenURIs", async function() {
+  //     let tokenIds = [...Array(100).keys()];
+  //     let tokenURIs = Array.apply(null, Array(100)).map(function (x, i) { return i.toString(); })
+      
+  //     await this.satoshiVerse.setBatchTokenURIs(tokenIds, tokenURIs);
+  //   })
+  // });
 });
