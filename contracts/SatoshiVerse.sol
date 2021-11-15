@@ -92,10 +92,10 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   
   uint8 calledTimesForTokenURI;
 
-  uint16[] publicRandomArr;
-  uint16[] presaleRandomArr;
-  uint16 _preSaleSV = 1;
-  uint16 _publicSV = 5001;
+  uint16[] unmintedTokensForPurchase;
+  uint16[] unmintedTokensForClaim;
+  uint16 _claimSV = 1;
+  uint16 _purchaseSV = 5001;
 
   uint16[] tokenIdsForBatch;
   string[] ipfsURIsForBatch;
@@ -224,14 +224,14 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       if(revealState) {
-        uint256 randomIndex = getRandomIndex(presaleRandomArr.length);
-        tokenId = presaleRandomArr[randomIndex];
-        presaleRandomArr[randomIndex] = presaleRandomArr[presaleRandomArr.length - 1];
-        presaleRandomArr.pop();
+        uint256 randomIndex = getRandomIndex(unmintedTokensForClaim.length);
+        tokenId = unmintedTokensForClaim[randomIndex];
+        unmintedTokensForClaim[randomIndex] = unmintedTokensForClaim[unmintedTokensForClaim.length - 1];
+        unmintedTokensForClaim.pop();
       } else {
-        tokenId = _preSaleSV;
-        require(tokenId <= SV_MAX / 2, "No legionnaires left for presale");
-        _preSaleSV++;
+        tokenId = _claimSV;
+        require(tokenId <= 5000, "No legionnaires left for presale");
+        _claimSV++;
       }
       
       legionnaire.safeMint(msg.sender, tokenId);
@@ -275,14 +275,14 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     uint256 tokenId;
     for (uint256 i = 0; i < limit; i++) {
       if(revealState) {
-        uint256 randomIndex = getRandomIndex(publicRandomArr.length);
-        tokenId = publicRandomArr[randomIndex];
-        publicRandomArr[randomIndex] = publicRandomArr[publicRandomArr.length - 1];
-        publicRandomArr.pop();
+        uint256 randomIndex = getRandomIndex(unmintedTokensForPurchase.length);
+        tokenId = unmintedTokensForPurchase[randomIndex];
+        unmintedTokensForPurchase[randomIndex] = unmintedTokensForPurchase[unmintedTokensForPurchase.length - 1];
+        unmintedTokensForPurchase.pop();
       } else {
-        tokenId = _publicSV;
+        tokenId = _purchaseSV;
         require(tokenId <= SV_MAX, "No legionnaires left for public sale");
-        _publicSV++;
+        _purchaseSV++;
       }
       
       legionnaire.safeMint(msg.sender, tokenId);
@@ -313,12 +313,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
   function startReveal() external onlyOwner {
     uint16 i;
-    for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
-      presaleRandomArr.push(i);
+    for(i = _claimSV; i < 5001; i++) {
+      unmintedTokensForClaim.push(i);
     }
 
-    for(i = _publicSV ; i < SV_MAX + 1; i++) {
-      publicRandomArr.push(i);
+    for(i = _purchaseSV ; i < SV_MAX + 1; i++) {
+      unmintedTokensForPurchase.push(i);
     }
     
     revealState = true;
@@ -335,12 +335,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     require(holder != address(0), "Invalid address to send");
     require(revealState, "Have to reveal");
 
-    for(uint256 i = 0; i < publicRandomArr.length; i++) {
-      legionnaire.safeMint(holder, publicRandomArr[i]);
+    for(uint256 i = 0; i < unmintedTokensForPurchase.length; i++) {
+      legionnaire.safeMint(holder, unmintedTokensForPurchase[i]);
     }
 
-    _publicSV = 10001;
-    delete publicRandomArr;
+    _purchaseSV = uint16(SV_MAX + 1);
+    delete unmintedTokensForPurchase;
   }
 
   function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOperator {
@@ -375,5 +375,10 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
         ipfsURIsForBatch.pop();
       }
     }
+  }
+
+  function setMaxLimit(uint256 maxLimit) external onlyOwner {
+    require(maxLimit < 10001, "Exceed max limit 10000");
+    SV_MAX = maxLimit;
   }
 }

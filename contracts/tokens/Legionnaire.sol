@@ -8,13 +8,24 @@ import "../lib/Operatorable.sol";
 
 // Sale contract
 contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
+  // Token URI
+  string public baseURI = "https://ipfs.io/ipfs/";
+
   constructor() ERC721("Satoshi's Legions - The Legionnaires", "LEGIONNAIRES")
   {
 
   }
 
-  function _baseURI() internal pure override returns (string memory) {
-    return "https://ipfs.io/ipfs/";
+  /**
+    * @dev Set `baseURI`
+    * Only `owner` can call
+    */
+  function setBaseTokenURI(string memory _baseTokenURI) external onlyOwner {
+    baseURI = _baseTokenURI;
+  }
+
+  function _baseURI() internal view override returns (string memory) {
+    return baseURI;
   }
 
   function _beforeTokenTransfer(
@@ -44,7 +55,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
   }
 
   function burn(uint256 _tokenId) external onlyOperator whenNotPaused {
-    require(super._exists(_tokenId), "LEGIONNARE: TOKEN_ID_INVALID");
+    require(super._exists(_tokenId), "LEGIONNARE BURN: TOKEN_ID_INVALID");
     _burn(_tokenId);
   }
 
