@@ -157,6 +157,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function popRandomTokenURI() internal returns(string memory) {
+    require(leftoverUris.length > 0, "No Left URIs");
+    
     uint256 randomIndex = getRandomIndex(leftoverUris.length);
     string memory tokenURI = leftoverUris[randomIndex];
     leftoverUris[randomIndex] = leftoverUris[leftoverUris.length - 1];

@@ -161,7 +161,11 @@ describe("SatoshiVerse", function () {
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(29);
 
       await this.satoshiVerse.beginSelfRevealPeriod([
-        "9002", "9003", "9004"
+        "9002"
+      ]);
+
+      await this.satoshiVerse.beginSelfRevealPeriod([
+        "9003", "9004"
       ]);
 
       await this.satoshiVerse.connect(this.alice).purchase(3, { value: ethers.utils.parseEther("0.3") });
