@@ -298,7 +298,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     */
   function getRandomIndex(uint256 range) internal returns(uint256) {
     randNonce++;
-    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
+    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomNess))) % range;
   }
 
   function safeBatchMintAndTransfer(address holder, bool isSetUri, uint16 batchSize) external onlyOperator {
@@ -316,14 +316,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
-    require(!revealState, "Self-Reveal already begun");
     require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
     require(_tokenIds.length > 0, "Empty parameters");
 
     while(_tokenIds.length > 0) {
-      randNonce++;
       uint256 length = _tokenIds.length;
-      uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomNess))) % length;
+      uint256 randomIndex = getRandomIndex(length);
       legionnaire.setTokenURI(_tokenIds[length - 1], _tokenURIs[randomIndex]);
       _tokenURIs[randomIndex] = _tokenURIs[length - 1];
       delete _tokenIds[length - 1];
