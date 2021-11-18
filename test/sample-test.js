@@ -150,14 +150,21 @@ describe("SatoshiVerse", function () {
 
     it("Claim and purchase after self reveal period begins", async function() {
       await this.satoshiVerse.beginSelfRevealPeriod([
-        "9000", "9001", "9002", "9003", "9004"
+        "9000", "9001"
       ]);
 
       await this.satoshiVerse.connect(this.alice).claim(1);
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(28);
       expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(0);
 
-      await this.satoshiVerse.connect(this.alice).purchase(4, { value: ethers.utils.parseEther("0.4") });
+      await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.4") });
+      expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(29);
+
+      await this.satoshiVerse.beginSelfRevealPeriod([
+        "9002", "9003", "9004"
+      ]);
+
+      await this.satoshiVerse.connect(this.alice).purchase(3, { value: ethers.utils.parseEther("0.3") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(32);
 
       // console.log(
@@ -176,9 +183,17 @@ describe("SatoshiVerse", function () {
       // );
     });
 
-    it("batchMintAndTransfer", async function() {
-      await this.satoshiVerse.batchMintAndTransfer(this.bob.address, false);
+    it("safeBatchMintAndTransfer", async function() {
+      await this.satoshiVerse.safeBatchMintAndTransfer(this.bob.address, false, 1000);
+      expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(1000);
+
+      await this.satoshiVerse.safeBatchMintAndTransfer(this.bob.address, false, 5638);
       expect(await this.legionnaire.balanceOf(this.bob.address)).to.equal(6638);
+    });
+
+    it("transferOwnership", async function() {
+      await this.satoshiVerse.transferOwnership(this.bob.address);
+      expect(await this.satoshiVerse.owner()).to.equal(this.bob.address);
     });
   });
 });

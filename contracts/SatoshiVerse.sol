@@ -285,8 +285,13 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
 
   function beginSelfRevealPeriod(string[] memory leftoverUris_) external onlyOperator {
-    leftoverUris = leftoverUris_;
-    revealState = true;
+    for(uint256 i = 0; i < leftoverUris_.length; i++) {
+      leftoverUris.push(leftoverUris_[i]);
+    }
+    
+    if(!revealState) {
+      revealState = true;
+    }
   }
    /**
     * 
@@ -296,18 +301,18 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
   }
 
-  function batchMintAndTransfer(address holder, bool isSetUri) external onlyOperator {
+  function safeBatchMintAndTransfer(address holder, bool isSetUri, uint16 batchSize) external onlyOperator {
     require(revealState, "Have to begin Self-Reveal");
-    require(_purchaseSV <= SV_MAX, "No legionnaires left for public sale");
+    require(_purchaseSV + batchSize <= SV_MAX + 1, "No legionnaires left for public sale");
 
-    for(uint256 i = _purchaseSV; i <= SV_MAX; i++) {
+    for(uint256 i = _purchaseSV; i < _purchaseSV + batchSize; i++) {
       legionnaire.safeMint(holder, i);
       if(isSetUri) {
         legionnaire.setTokenURI(i, "placeholder");
       }
     }
 
-    _purchaseSV = uint16(SV_MAX + 1);
+    _purchaseSV = uint16(_purchaseSV + batchSize);
   }
 
   function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
