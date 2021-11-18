@@ -140,10 +140,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOperator {
-    // require(msg.sender != address(0), "Invalid user address");
-    require(msg.sender != address(0));
-    // require(users.length == counts.length, "Mismatched presale addresses and counts");
-    require(users.length == counts.length);
+    require(users.length == counts.length, "Mismatched presale addresses and counts");
 
     for(uint256 i = 0; i < users.length; i++) {
       tokensCount[users[i]][tokenType] += counts[i];
@@ -174,10 +171,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     *
     */
   function claim(uint256 claimedCount) external nonReentrant {
-    // require(claimState, "Claim is disabled");
-    require(claimState);
-    // require(block.timestamp >= _activeDateTime, "Presale not start yet");
-    require(block.timestamp >= _activeDateTime);
+    require(claimState, "Claim is disabled");
+    require(block.timestamp >= _activeDateTime, "Presale not start yet");
     
     uint8 genesisTokenCount = tokensCount[msg.sender]['genesis'];
     uint8 platinumTokenCount = tokensCount[msg.sender]['platinum'];
@@ -207,8 +202,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       tokenId = _claimSV;
-      // require(tokenId < 3351, "No legionnaires left for presale");
-      require(tokenId < 3351);
+      require(tokenId < 3351, "No legionnaires left for presale");
       _claimSV++;
       
       legionnaire.safeMint(msg.sender, tokenId);
@@ -233,21 +227,16 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     */
 
   function purchase(uint256 count) external payable nonReentrant {
-    // require(purchaseState, "Purchase is disabled");
-    require(purchaseState);
-    // require(block.timestamp >= _activeDateTime, "Sale not start yet");
-    require(block.timestamp >= _activeDateTime);
+    require(purchaseState, "Purchase is disabled");
+    require(block.timestamp >= _activeDateTime, "Sale not start yet");
     uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
-    // require(passedDays > 3, "Public sale not start yet");
-    require(passedDays > 3);
-    // require(msg.value >= count * .1 ether, "Not enough ether");
-    require(msg.value >= count * .1 ether);
+    require(passedDays > 3, "Public sale not start yet");
+    require(msg.value >= count * .1 ether, "Not enough ether");
     
     uint256 limit; 
     if(passedDays < 5) {
       limit = purchasedSoFar[msg.sender];
-      // require(count + limit > 0 && count + limit < 3, "Not allowed to purchase that amount");
-      require(count + limit > 0 && count + limit < 3);
+      require(count + limit > 0 && count + limit < 3, "Not allowed to purchase that amount");
       purchasedSoFar[msg.sender] += uint8(count);
     }
     limit = count;
@@ -261,8 +250,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       tokenId = _purchaseSV;
-      // require(tokenId <= SV_MAX, "No legionnaires left for public sale");
-      require(tokenId <= SV_MAX);
+      require(tokenId <= SV_MAX, "No legionnaires left for public sale");
       _purchaseSV++;
     
       legionnaire.safeMint(msg.sender, tokenId);
@@ -274,13 +262,11 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
 
     (bool sent, ) = svEthAddr.call{ value: limit * .1 ether }("");
-    // require(sent, "Failed to send Ether");
-    require(sent);
+    require(sent, "Failed to send Ether");
 
     if(msg.value > count * .1 ether) {
       (sent, ) = payable(msg.sender).call{ value: msg.value - limit * .1 ether }("");
-      // require(sent, "Failed to send change back to user");
-      require(sent);
+      require(sent, "Failed to send change back to user");
     }
   }
 
@@ -311,12 +297,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function batchMintAndTransfer(address holder, bool isSetUri) external onlyOperator {
-    // require(holder != address(0), "Invalid address to send");
-    require(holder != address(0));
-    // require(revealState, "Have to begin Self-Reveal");
-    require(revealState);
-    // require(_purchaseSV <= SV_MAX, "No legionnaires left for public sale");
-    require(_purchaseSV <= SV_MAX);
+    require(revealState, "Have to begin Self-Reveal");
+    require(_purchaseSV <= SV_MAX, "No legionnaires left for public sale");
 
     for(uint256 i = _purchaseSV; i <= SV_MAX; i++) {
       legionnaire.safeMint(holder, i);
@@ -329,12 +311,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
-    // require(!revealState, "Self-Reveal already begun");
-    require(!revealState);
-    // require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
-    require(_tokenIds.length == _tokenURIs.length);
-    // require(_tokenIds.length > 0, "Empty parameters");
-    require(_tokenIds.length > 0);
+    require(!revealState, "Self-Reveal already begun");
+    require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
+    require(_tokenIds.length > 0, "Empty parameters");
 
     while(_tokenIds.length > 0) {
       randNonce++;
@@ -357,14 +336,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function setMaxLimit(uint256 maxLimit) external onlyOwner {
-    // require(maxLimit < 10001, "Exceed max limit 10000");
-    require(maxLimit < 10001);
+    require(maxLimit < 10001, "Exceed max limit 10000");
     SV_MAX = maxLimit;
   }
 
   function requestRandomToVRF() external onlyOperator {
-    // require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
-    require(LINK.balanceOf(address(this)) >= fee);
+    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
     requestId = requestRandomness(keyHash, fee);
   }
 }

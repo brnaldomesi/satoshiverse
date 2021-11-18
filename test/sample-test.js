@@ -80,10 +80,10 @@ describe("SatoshiVerse", function () {
   describe("Claim and Purchase", function() {
     it("Toggle claim and purchase", async function() {
       await this.satoshiVerse.toggleClaim();
-      await expect(this.satoshiVerse.claim(2)).to.revertedWith("");
+      await expect(this.satoshiVerse.claim(2)).to.revertedWith("Claim is disabled");
 
       await this.satoshiVerse.togglePurchase();
-      await expect(this.satoshiVerse.purchase(2, { value: ethers.utils.parseEther("0.2") })).to.revertedWith("");
+      await expect(this.satoshiVerse.purchase(2, { value: ethers.utils.parseEther("0.2") })).to.revertedWith("Purchase is disabled");
 
       await this.satoshiVerse.toggleClaim();
       await this.satoshiVerse.togglePurchase();
@@ -102,7 +102,7 @@ describe("SatoshiVerse", function () {
       await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.5") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(2);
 
-      await expect(this.satoshiVerse.connect(this.alice).purchase(2, { value: ethers.utils.parseEther("0.1") })).to.revertedWith("");
+      await expect(this.satoshiVerse.connect(this.alice).purchase(2, { value: ethers.utils.parseEther("0.1") })).to.revertedWith("Not enough ether");
 
       dateTime.setTime(1638032460000); // November 27th at 12:00 PM EST
       await network.provider.request({
