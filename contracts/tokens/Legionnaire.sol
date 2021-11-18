@@ -1,10 +1,10 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GNU General Public License v3.0
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "../lib/Operatorable.sol";
+import "../utils/Operatorable.sol";
+import "../helpers/StringHelper.sol";
 
 // Sale contract
 contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
@@ -20,7 +20,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
     * @dev Set `baseURI`
     * Only `owner` can call
     */
-  function setBaseTokenURI(string memory _baseTokenURI) external onlyOwner {
+  function setBaseTokenURI(string memory _baseTokenURI) external onlyOperator {
     baseURI = _baseTokenURI;
   }
 
@@ -32,7 +32,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
     address _from,
     address _to,
     uint256 _tokenId
-  ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
+  ) internal override(ERC721, ERC721Enumerable) {
     ERC721Enumerable._beforeTokenTransfer(_from, _to, _tokenId);
   }
 
@@ -47,19 +47,26 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
   }
 
   function tokenURI(uint256 _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-    return ERC721URIStorage.tokenURI(_tokenId);
+    string memory _tokenURI = ERC721URIStorage.tokenURI(_tokenId);
+    uint256 lastPosition = bytes(_tokenURI).length;
+    string memory lastPrefix = StringHelper.substring(_tokenURI, lastPosition - 11, lastPosition); 
+    if(StringHelper.compareStrings(lastPrefix, "placeholder")) {
+      return "https://ipfs.io/ipfs/placeholder";
+    } else {
+      return _tokenURI;
+    }
   }
 
-  function safeMint(address to, uint256 tokenId) external onlyOperator whenNotPaused {
+  function safeMint(address to, uint256 tokenId) external onlyOperator {
     _safeMint(to, tokenId);
   }
 
-  function burn(uint256 _tokenId) external onlyOperator whenNotPaused {
+  function burn(uint256 _tokenId) external onlyOperator {
     require(super._exists(_tokenId), "LEGIONNARE BURN: TOKEN_ID_INVALID");
     _burn(_tokenId);
   }
 
-  function setTokenURI(uint256 tokenId, string memory _tokenURI) external onlyOperator whenNotPaused {
+  function setTokenURI(uint256 tokenId, string memory _tokenURI) external onlyOperator {
     ERC721URIStorage._setTokenURI(tokenId, _tokenURI);
   }
 }
