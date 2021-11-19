@@ -157,8 +157,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
   function popRandomTokenURI() internal returns(string memory) {
-    require(leftoverUris.length > 0, "No Left URIs");
-    
     uint256 randomIndex = getRandomIndex(leftoverUris.length);
     string memory tokenURI = leftoverUris[randomIndex];
     leftoverUris[randomIndex] = leftoverUris[leftoverUris.length - 1];
@@ -184,6 +182,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
 
     uint256 minCount = NumberHelper.min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount, claimedCount);
+    require(_claimSV + minCount <= 3351, "No legionnaires left for presale");
+
     uint256 i = 0;
     uint256 tokenId;
     string memory tokenURI;
@@ -204,7 +204,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       tokenId = _claimSV;
-      require(tokenId < 3351, "No legionnaires left for presale");
       _claimSV++;
       
       legionnaire.safeMint(msg.sender, tokenId);
@@ -240,11 +239,16 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       limit = purchasedSoFar[msg.sender];
       require(count + limit > 0 && count + limit < 3, "Not allowed to purchase that amount");
       purchasedSoFar[msg.sender] += uint8(count);
+    } else if (passedDays < 6) {
+      require(count < 11, "Up to 10 only");
     }
+
     limit = count;
+    require(_purchaseSV + limit <= SV_MAX + 1, "No legionnaires left for public sale");
 
     uint256 tokenId;
     string memory tokenURI;
+
 
     for (uint256 i = 0; i < limit; i++) {
       if(revealState) {
@@ -252,7 +256,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       tokenId = _purchaseSV;
-      require(tokenId <= SV_MAX, "No legionnaires left for public sale");
       _purchaseSV++;
     
       legionnaire.safeMint(msg.sender, tokenId);
