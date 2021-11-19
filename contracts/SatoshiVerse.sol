@@ -107,7 +107,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
   bytes32 requestId;
 
-  string[] leftoverUris;
+  string[] public leftoverUris;
 
   mapping(address => mapping(string => uint8)) public tokensCount;
 
@@ -287,14 +287,14 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 *
 */ 
 
-  function beginSelfRevealPeriod(string[] memory leftoverUris_) external onlyOperator {
+  function pushLeftOverUris(string[] memory leftoverUris_) external onlyOperator {
     for(uint256 i = 0; i < leftoverUris_.length; i++) {
       leftoverUris.push(leftoverUris_[i]);
     }
-    
-    if(!revealState) {
-      revealState = true;
-    }
+  }
+
+  function beginSelfRevealPeriod() external onlyOperator {
+    revealState = true;
   }
    
    // A Random Index between zero and range leveraging VRF 
