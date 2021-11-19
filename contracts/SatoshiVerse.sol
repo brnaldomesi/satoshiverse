@@ -288,6 +288,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 */ 
 
   function pushLeftOverUris(string[] memory leftoverUris_) external onlyOperator {
+    require(!revealState, "Self-Reveal already begun");
+
     for(uint256 i = 0; i < leftoverUris_.length; i++) {
       leftoverUris.push(leftoverUris_[i]);
     }

@@ -168,11 +168,10 @@ describe("SatoshiVerse", function () {
       await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.4") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(29);
 
-      
-
       await this.satoshiVerse.connect(this.alice).purchase(3, { value: ethers.utils.parseEther("0.3") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(32);
 
+      await expect(this.satoshiVerse.pushLeftOverUris(["9005", "9006"])).to.be.revertedWith("Self-Reveal already begun");
 
       // console.log(
       //   await this.legionnaire.tokenURI(1), 
