@@ -79,7 +79,10 @@ import "./interfaces/ILegionnaire.sol";
 import "./utils/Operatorable.sol";
 import "./helpers/NumberHelper.sol";
 
-// Sale contract
+
+ /**
+    * 
+    */
 contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   ILegionnaire public legionnaire;
 
@@ -138,7 +141,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   function setPaymentAddress(address _svEthAddr) external onlyURISetter {
     svEthAddr = payable(_svEthAddr);
   }
-
+ /**
+    * 
+    */
   function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOperator {
     require(users.length == counts.length, "Mismatched presale addresses and counts");
 
@@ -147,7 +152,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-
+/**
+*
+*/
   function toggleClaim() external onlyOperator {
     claimState = !claimState;
   }
@@ -156,6 +163,13 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     purchaseState = !purchaseState;
   }
 
+
+/* TODO 
+* Make Public 
+*
+*
+*
+*/
   function popRandomTokenURI() internal returns(string memory) {
     uint256 randomIndex = getRandomIndex(leftoverUris.length);
     string memory tokenURI = leftoverUris[randomIndex];
@@ -222,8 +236,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   }
 
    /**
-    * TODO 
-    * Add purchase limit of 2 legionnaires 
+    * 
     * 
     */
 
@@ -288,6 +301,14 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     INTERVAL = interval;
   }
 
+/** TODO
+* Call this function 
+* pushLeftOverUris -> 
+* set to true, can only call URIs while it has not revealed yet
+*
+* A function for the Operator to start the period of time for the user to reveal the URI upon mint
+*
+*/ 
 
   function beginSelfRevealPeriod(string[] memory leftoverUris_) external onlyOperator {
     for(uint256 i = 0; i < leftoverUris_.length; i++) {
@@ -319,7 +340,9 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
     _purchaseSV = uint16(_purchaseSV + batchSize);
   }
-
+ /**
+    * 
+    */
   function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
     require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
     require(_tokenIds.length > 0, "Empty parameters");
@@ -336,18 +359,24 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       assembly { mstore(_tokenURIs, sub(mload(_tokenURIs), 1)) }
     }
   }
-
+ /**
+    * 
+    */
   function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
     if(requestId == _requestId) {
       randomNess = _randomness;
     }
   }
-
+ /**
+    * 
+    */
   function setMaxLimit(uint256 maxLimit) external onlyOwner {
     require(maxLimit < 10001, "Exceed max limit 10000");
     SV_MAX = maxLimit;
   }
-
+ /**
+    * 
+    */
   function requestRandomToVRF() external onlyOperator {
     require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
     requestId = requestRandomness(keyHash, fee);
