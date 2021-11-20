@@ -39,10 +39,10 @@ describe("SatoshiVerse", function () {
     );
     await this.satoshiVerse.deployed();
     
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [100,50]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [100,50]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [100,50]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [100,50]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [5,5]);
 
     await this.legionnaire.addOperator(this.satoshiVerse.address);
     await this.legionnaire.addOperator(this.operator.address);
@@ -67,12 +67,12 @@ describe("SatoshiVerse", function () {
       });
     });
 
-    it("URI setter", async function() {
+    it("setPaymentAddress", async function() {
       await expect(this.satoshiVerse.connect(this.operator).setPaymentAddress("0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8"))
-        .to.be.revertedWith('Settable: CALLER_NO_URI_SETTER_ROLE');
-
+        .to.be.revertedWith('Ownable: caller is not the owner');
       expect(await this.satoshiVerse.isURISetter(this.uriSetter.address)).to.be.true;
-      await this.satoshiVerse.connect(this.uriSetter).setPaymentAddress("0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8");
+
+      await this.satoshiVerse.setPaymentAddress("0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8");
       expect(await this.satoshiVerse.svEthAddr()).to.equal("0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8");
     });
   });
@@ -149,10 +149,18 @@ describe("SatoshiVerse", function () {
     });
 
     it("Claim and purchase after self reveal period begins", async function() {
-      await this.satoshiVerse.beginSelfRevealPeriod([
+      await this.satoshiVerse.pushLeftOverUris([
         "9000", "9001"
       ]);
+      await this.satoshiVerse.pushLeftOverUris([
+        "9002"
+      ]);
+      await this.satoshiVerse.pushLeftOverUris([
+        "9003", "9004"
+      ]);
 
+      await this.satoshiVerse.beginSelfRevealPeriod();
+      
       await this.satoshiVerse.connect(this.alice).claim(1);
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(28);
       expect(await this.satoshiVerse.tokensCount(this.alice.address, 'silver')).to.equal(0);
@@ -160,16 +168,10 @@ describe("SatoshiVerse", function () {
       await this.satoshiVerse.connect(this.alice).purchase(1, { value: ethers.utils.parseEther("0.4") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(29);
 
-      await this.satoshiVerse.beginSelfRevealPeriod([
-        "9002"
-      ]);
-
-      await this.satoshiVerse.beginSelfRevealPeriod([
-        "9003", "9004"
-      ]);
-
       await this.satoshiVerse.connect(this.alice).purchase(3, { value: ethers.utils.parseEther("0.3") });
       expect(await this.legionnaire.balanceOf(this.alice.address)).to.equal(32);
+
+      await expect(this.satoshiVerse.pushLeftOverUris(["9005", "9006"])).to.be.revertedWith("Self-Reveal already begun");
 
       // console.log(
       //   await this.legionnaire.tokenURI(1), 
