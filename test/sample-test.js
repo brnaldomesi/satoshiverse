@@ -39,10 +39,10 @@ describe("SatoshiVerse", function () {
     );
     await this.satoshiVerse.deployed();
     
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [5,5]);
-    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [5,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'genesis', [100,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'platinum', [100,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'gold', [100,5]);
+    await this.satoshiVerse.seedPresaleWhiteList([this.alice.address, this.bob.address], 'silver', [100,5]);
 
     await this.legionnaire.addOperator(this.satoshiVerse.address);
     await this.legionnaire.addOperator(this.operator.address);
@@ -159,6 +159,8 @@ describe("SatoshiVerse", function () {
         "9003", "9004"
       ]);
 
+      let tx = await this.satoshiVerse.getLeftOverUrisLength();
+      console.log("Length: ", tx.toNumber());
       await this.satoshiVerse.beginSelfRevealPeriod();
       
       await this.satoshiVerse.connect(this.alice).claim(1);

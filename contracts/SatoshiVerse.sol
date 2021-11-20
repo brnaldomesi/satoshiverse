@@ -186,7 +186,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     totalCount += platinumTokenCount;
     totalCount += goldTokenCount;
     totalCount += silverTokenCount;
-    
+
     uint256 minCount = NumberHelper.min(totalCount, claimedCount);
     require(_claimSV + minCount <= 3351, "No legionnaires left for presale");
 
@@ -297,6 +297,10 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     for(uint256 i = 0; i < leftoverUris_.length; i++) {
       leftoverUris.push(leftoverUris_[i]);
     }
+  }
+
+  function getLeftOverUrisLength() public view returns(uint256) {
+    return leftoverUris.length;
   }
 
   function beginSelfRevealPeriod() external onlyOperator {
