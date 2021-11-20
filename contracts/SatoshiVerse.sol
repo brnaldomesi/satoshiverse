@@ -283,14 +283,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     _activeDateTime = activeDateTime;
   }
 
-/** TODO
-* Call this function 
-* pushLeftOverUris -> 
-* set to true, can only call URIs while it has not revealed yet
-*
-* A function for the Operator to start the period of time for the user to reveal the URI upon mint
-*
-*/ 
+
+// Operator pushes the set of remaining unclaimed legionnaires going into self-reveal phase
   function pushLeftOverUris(string[] memory leftoverUris_) external onlyOperator {
     require(!revealState, "Self-Reveal already begun");
 
@@ -303,6 +297,11 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     return leftoverUris.length;
   }
 
+/*
+*
+* A function for the Operator to start the period of time for the user to reveal the URI upon mint
+*
+*/  
   function beginSelfRevealPeriod() external onlyOperator {
     revealState = true;
   }
@@ -363,7 +362,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
  // Operator Calls to VRF for a random nonce
   function requestRandomToVRF() external onlyOperator {
-    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK");
     requestId = requestRandomness(keyHash, fee);
   }
 }
