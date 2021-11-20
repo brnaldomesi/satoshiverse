@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: GNU General Public License v3.0
 pragma solidity ^0.8.0;
 
-// Interfarce for Legionnaire token
+// Interface for Legionnaire token
 interface ILegionnaire {
   
   function safeMint(address to, uint256 tokenId) external;

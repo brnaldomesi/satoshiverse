@@ -162,7 +162,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
 // Returns a Random Legionnaire from the set of Random Legionniares 
   function popRandomTokenURI() internal returns(string memory) {
-    // legtOverUris === unpurchased / unclaimed Legionnaires 
+    // leftOverUris === unpurchased / unclaimed Legionnaires 
     uint256 randomIndex = getRandomIndex(leftoverUris.length);
     string memory tokenURI = leftoverUris[randomIndex];
     leftoverUris[randomIndex] = leftoverUris[leftoverUris.length - 1];
@@ -182,7 +182,12 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
     uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
 
-    uint256 minCount = NumberHelper.min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount, claimedCount);
+    uint256 totalCount = genesisTokenCount;
+    totalCount += platinumTokenCount;
+    totalCount += goldTokenCount;
+    totalCount += silverTokenCount;
+    
+    uint256 minCount = NumberHelper.min(totalCount, claimedCount);
     require(_claimSV + minCount <= 3351, "No legionnaires left for presale");
 
     uint256 i = 0;
@@ -236,7 +241,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       limit = purchasedSoFar[msg.sender];
       require(count + limit > 0 && count + limit < 3, "Not allowed to purchase that amount");
       purchasedSoFar[msg.sender] += uint8(count);
-     // on Day 5 you can only purhcase up to 10 / transaction 
+     // on Day 5 you can only purchase up to 10 / transaction 
     } else if (passedDays < 6) {
       require(count < 11, "Up to 10 only");
     }
@@ -273,7 +278,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-   // Operator can set the start time in UNIX stamp for the claim and sale period 
+// Operator can set the start time in UNIX stamp for the claim and sale period 
   function setActiveDateTime(uint256 activeDateTime) external onlyOperator {
     _activeDateTime = activeDateTime;
   }
@@ -286,7 +291,6 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 * A function for the Operator to start the period of time for the user to reveal the URI upon mint
 *
 */ 
-
   function pushLeftOverUris(string[] memory leftoverUris_) external onlyOperator {
     require(!revealState, "Self-Reveal already begun");
 
@@ -321,8 +325,8 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
 
     _purchaseSV = uint16(_purchaseSV + batchSize);
   }
- // URISetter will call this to randomly pair URIs with NFT Metadata to tokens.
 
+ // URISetter will call this to randomly pair URIs with NFT Metadata to tokens.
   function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
     require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
     require(_tokenIds.length > 0, "Empty parameters");
@@ -346,11 +350,13 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       randomNess = _randomness;
     }
   }
+
  // Owner can decrease the total supply not ever exceeding 10,000 Legionnaires
   function setMaxLimit(uint256 maxLimit) external onlyOwner {
     require(maxLimit < 10001, "Exceed max limit 10000");
     SV_MAX = maxLimit;
   }
+
  // Operator Calls to VRF for a random nonce
   function requestRandomToVRF() external onlyOperator {
     require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
