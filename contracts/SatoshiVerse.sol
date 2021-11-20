@@ -293,6 +293,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
+  // Returns the left over URIs array length
   function getLeftOverUrisLength() public view returns(uint256) {
     return leftoverUris.length;
   }

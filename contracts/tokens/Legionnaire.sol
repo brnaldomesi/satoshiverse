@@ -121,7 +121,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
     uint256 lastPosition = bytes(_tokenURI).length;
     string memory lastPrefix = StringHelper.substring(_tokenURI, lastPosition - 11, lastPosition); 
     if(StringHelper.compareStrings(lastPrefix, "placeholder")) {
-      return "https://ipfs.io/ipfs/placeholder";
+      return "https://ipfs.io/ipfs/QmWL9iFWyYrRPPxF8habN4FkcQYmwHinE8Zdw7B6vL4VrT";
     } else {
       return _tokenURI;
     }
