@@ -32,6 +32,8 @@ async function main() {
 
   const SatoshiVerse = await hre.ethers.getContractFactory("SatoshiVerse");
   const satoshiVerse = await SatoshiVerse.deploy(
+    "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
+    "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
     legionnaire.address,
     chainlinkConf.rinkeby.vrfCoordinator,
     chainlinkConf.rinkeby.link,
@@ -42,6 +44,7 @@ async function main() {
   await satoshiVerse.deployed();
 
   console.log("SatoshiVerse deployed to:", satoshiVerse.address);
+  console.log("Legionnaire deployed to:", legionnaire.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -1,12 +1,12 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GNU General Public License v3.0
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract Operatorable is Ownable, AccessControl, Pausable {
+contract Operatorable is Ownable, AccessControl {
   bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+  bytes32 public constant URI_SETTER_ROLE = keccak256("URI_SETTER_ROLE");
 
   /**
     * @dev Restricted to members of the `operator` role.
@@ -16,9 +16,15 @@ contract Operatorable is Ownable, AccessControl, Pausable {
     _;
   }
 
+  modifier onlyURISetter() {
+    require(hasRole(URI_SETTER_ROLE, msg.sender), "Settable: CALLER_NO_URI_SETTER_ROLE");
+    _;
+  }
+
   constructor() {
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     _setupRole(OPERATOR_ROLE, msg.sender);
+    _setupRole(URI_SETTER_ROLE, msg.sender);
   }
 
   /**
@@ -35,20 +41,12 @@ contract Operatorable is Ownable, AccessControl, Pausable {
     revokeRole(OPERATOR_ROLE, _account);
   }
 
-  /**
-    * @dev Pause the contract
-    * Only `owner` can call
-    */
-  function pause() public onlyOwner {
-    super._pause();
+  function addURISetter(address _account) public onlyOwner {
+    grantRole(URI_SETTER_ROLE, _account);
   }
 
-  /**
-    * @dev Unpause the contract
-    * Only `owner` can call
-    */
-  function unpause() public onlyOwner {
-    super._unpause();
+  function removeURISetter(address _account) public onlyOwner {
+    revokeRole(URI_SETTER_ROLE, _account);
   }
 
   /**
@@ -56,5 +54,12 @@ contract Operatorable is Ownable, AccessControl, Pausable {
     */
   function isOperator(address _account) public view returns (bool) {
     return hasRole(OPERATOR_ROLE, _account);
+  }
+
+  /**
+    * @dev Check if an _account is operator.
+    */
+  function isURISetter(address _account) public view returns (bool) {
+    return hasRole(URI_SETTER_ROLE, _account);
   }
 }

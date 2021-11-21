@@ -1,123 +1,124 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GNU General Public License v3.0
 
-
-
-// Todo clean this up spaces. 
-  // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*,,,,,,,,,,,,&&&&&&&&&&&&&&&&(,,,,,,,,,,,/,,,,,,,,,,,,,****,,,,,,,,,,,,,,,,,,,.                                          
-  // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,**,,,,,,,,,,,,,,(,/****/**********,,,,,,,,,,,,,,,,,,,.                                          
-  // ,,,,,,,,,,,,,,,,,,,,,,,**,,,,,*,,,,*,*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#,/****/**//*//***,,,,,,,,,,,,,,,,,,,.                                          
-  // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*,,*,*,/,,,..............,,,,,,,,,,,,,,,,,,,,*/(,/****(/,(*//////*******************.                                          
-  // ,,,,,,,,,,,,,,,,,,,,*,,,,*,,,**,,,,*./,,,. ............,,,,,,,,,,,,,,,,,,***/,******/(,(//*/*////*/,,,,,,,,,,,,,,,.                                          
-  // ,,,,,,,,,,,,,,,,**,,,,,,,,,,,**,,,*, ,,,,,.  ..........,,,,,,,,,,,,,,,,,***,(,******/(,#//**/*///////,***,***,***,.                                          
-  // ,,,,,,,,,,,,,,**,,,,,,,,,*,*,**,,,*,,  ,/**,...*......,,,,,,,,,,,,*,,**//#/,*//******(*(///////////((((,**********.                                          
-  //  ,,,,,,,,,,,****,,,,,,,,,,,,*,**,,,,,,,,,,. ..*/,,,,**************/*/(*,,,/**/*******//,/*///*///////((##(*********,                                          
-  // ,,,,,,,,,******,,,,,,,,,,,,*,*,,,,,,,.,,,,.....,,,,**.,/,**.,,******,**************//*,////////////(((###%,*******,                                          
-  // ,,,,,,,********,*,,,,,,,*,,*,*,,,,,,,,,.....,,,.  ...,,/,**.,/,,******,,,,**********/**/**///**////(((###%%/******,                                          
-  // ,,,,,,********,*,,,,,,,,*,*,/*,*,,,,,..  .,,.....,,,,,*/.*/.,/**,,,,,,************///**,///*//////((((####%%(*****,                                          
-  // ,,,,,**/********,**,,,,,*,,,,,,,,,.,,,,,,,....,,,,...,*(,/*.,/,,*****,,,*******,***//,,/***///////((######%%#/****,                                          
-  // ,,,,,**********,,**,,,****,,,,,*,,,,,,,,....,,**,,,****(,**,,(***,********,,****////(,(*///////////(((#####%%%****,                                          
-  //  ***************,,***,,,****,,,,***,,...,,,,,,....,,*/**(,/*,,(//***,,,***********///(,/**/////(////(########%%(///*                                          
-  // ***,///********,,,***,,,*****,,*,,******,,,,,****,,,,**/,/**,/,,,*********////******(,(//((////*//((########%%&///,                                          
-  // ,,,,*//*********,,,,*****,,,*******,*********,********/(,/*,,(//****////***,,,**//(/(,(((///*//((((#######%%%%%(((*                                          
-  // ***//*/************,,*****///*/*//****,,,*****,,,,***,//,/**,/*///***,,,**//((////*((*////((((((((((#######%%%%(//,                                          
-  // *****,(******************,**(/(/*****//**,,,,**********(,/****/****////////****//(((#/(((((((///(((((######%%#%%//,                                          
-  // ***/***/*/*/*//(((############%(##((((///////***/**(,#.,/*/,/(*///(///////((##%%%%&%&%&&&&&&&&&&&&&&&%%%###%#%%%((*                                          
-  // ,,*&/**//*/((###%&&#%%%%%%%%%%%#(((((((((###/(#%,,,,//*******/**,,*/((#&%%#%#######%&&&&&&&&&&&&@&&&&&&%%%%%##&@(*,                                          
-  // ,*&&&(*///((((#%%%(#*******///*//////(#%####(%,(******,******////((#%%%%%%%%%(////////////////(&&&&@&&&&%%%%#&&&@/,                                          
-  //  *%&,#%/**(((/#/#/*(*%***************/////#%%#(((/*,,**********///(%%%%%&%#////////////////////@%%%&@&&%&&%%#%&%#&&,                                          
-  //  **(,*&&**(##,********,#/***************/////%(/******************#%%%%%////////////////****(//%%%%%%%##&&%%%&&##&#,                                          
-  // **//*/&&#,/,,(*//********,/#*,,,,,,,,**/#%//*//****,,,,,,,****//(%#%%%%&&@%(/////***,*/&/*/((((((#%%&%#%%#@@@&#%&#*                                          
-  // /*#*#,(&/,,,,,**,*%,//*********************/******,,**********//(##%%%#%%%%%%*********///(//#%#(&/((/#####%@##@#&#*                                          
-  // ,*#%**,#/,,,,,,,,,,*,,,,*##(***,,/,*((,.,*,*******,,,,,****,,,,*(###%%%%#%,*/((/****(*/#%#***///////((((#%%%###@%#,                                          
-  // *(*%*(#&/*,,,,,,,,,,,,,,,,,,,,..    .,*,,*********************//###%%%////*/*,****,*************////((((##%@%%%%##,                                          
-  // **/*(,(#**,,,,,,,,,,,,,,,,,,...   .,(,.*,,*****/***,,,,,,,,***//####%*,****/,*/*,,,,,,*,*******////((((##%#&&#%%%/*                                          
-  // **(//(*******,,,,,,,,,,,,,,,,......,/,*,,,,,,********,*********/##%%//*,,,*,*//*,,,,,,*******////(((###%%%%%%&%%%#*                                          
-  // ///((#*/*********,,,,,,,,,,,,,,,,,,./,,,**,****//**,,,,,,,*,,,*(#%%%///////*,****,,*********////((###%%%%%%&#%%%(/,                                          
-  // ***((((#*#*********,,,,,,,,,,,,,,,,,*,,******///******,,,*/***/##%%(/****//(%/************///(((##%%%%%%%&%&%%%%/(*                                          
-  // ****((((((/*#***************,,,,,,***#*//**(//(///**,,****,****(#%%////(/(((#///////////((((((##%%%%%%&%&%&%%%%(((*                                          
-  // ****((((((((#*(////**********************,(/*/(//***,,,***,*/**#%%%((#/%(*//////////(((((###%%%%%%%%&%&&&&%%%%#///*                                          
-  // ,,,,,(((((((((*(%%(**///*********************//(//****,***,****##%%#%////////////(((#((#%%%%&&%%&@&&&&&&&&%%%%/(((*                                          
-  // ******(((((((#(/#//((**(%(***************,*****#//*////(//(((#/%#%%(////////////((((###%#@&%%%&&%&&&&&&&&%%%%/////,                                          
-  // ******#(((((((#(#%//////////************,,,,****(//%#(/***/(#&&@%%&%//////////(((((%#%%%&%%&&%%&&&&&&&&&%%%%%/////,                                          
-  // ,,,,,,,((((((((((#(///////#/*****%/*****,,,***(#/(#%&&%%%%%%&&@&&&&&(////////(((#@%#%%%%&%%%&&&&&&&&&&&&&%%%//////,                                          
-  // /////////%(((((((((/(////*((******#&#/****#*,,,********(%(%%%%%%%%%%*//#((((((&&@%%%%%&&&%&&&&&&&&&&&&&&%&%///////,                                          
-  // *********(##%(((((#(/%%*////********@&%&&&&&&&&&&&(&*********//%&&&&&&&@@@@&&@@%%%%%%%%%%%%&@@&&&&&&&%&%%%////////,                                          
-  // ////////////#*%//%&&%%/////**********/@@@@@@@@@@@@@&/,,,,,,,**%@@@@@@@@@@@@@@&%%%%%%%%%%%%%&%&&@@&%&&#&%%/////////,                                          
-  // ***********///////(%/#/////********,#/**,,,,,,,,,,,,,,,,,,,,,*******/////%%%%&&%%%%%%%%%%%&&&&&@&%%%%%%%//////////,                                          
-  // ////////////*/*///////#//*************,,,,,,,,,,*///******///(((#((/////((((#%%%%%%%%%%%%%%%&&%%%%%%%%%///////////,                                          
-  // ,,,,,,,,,,,,,//******/(//**********#*******(&&&&&&&&&&&&&&&&&&&&&&@@@@&&%##%%%%&%%%%%%%%%%%&%%%%%%%%%&*///////////,                                          
-  // ,,,,,,,,,,,,,*(/******///**/%#(****%*&&&&%******,,. .,***********/////(%%&&@@@&&%%%&&@@%%%&%%%%%%%%%&(////////////,                                          
-  // ,,,,,,,,,,,,,,(,(*******((/*****************,,,,,,,,,,,,,,,,,********/(######%#%%%%%%%%%&&&%%%%%%%&#%/////////////,                                          
-  // ***************((,#*/***********************/////////****/////((#%%&&&%%%####%##%%%%%%%%%%%%%%%%&%&&//////////////,                                          
-  // ***************//((/*(*///********************///((##%%&&&&&&&&&&%%%####(#((##%%%%%%%%%%%%%%%&#&&&&///////////////*                                          
-  // ****************,((//#*/*#******************////////////((#(#((#%#&%####((#%%%%%%%%%%%%%%&%%%&&%&&****************,                                          
-  // //////////////////((((((*(/,(*********************************//////((((#(######%%%%%%&#%%%&&&&&%(((((((((((((((((*                                          
-  // ///////////////////##(((#*((#,#***********************/,***(***/////////(((((##%%%%%&%&&%%&&&&&#******************,                                          
-  // /////////////////////##((#/#(((,#**************(/,,*,/,//((/,#**,/%(////(((((%#%%%%%&&&%%&&&&&////////////////////,                                          
-  // ///////////////////////####*(/(//(,#*/*###/,,,/#,%(,#&&&&&#&&@*(*(#%//*/%%&&(#%&#&%&&&&%&&&&//////////////////////,                                          
-  // ///////////////////////###%#*((/(////,,*##/,*/(((,(%%@*,,,**&@*%((/(((#(%&&#((&%&%%%&&&&&(((//////////////////////,                                          
-  // ///////////////////////##(//%(%((///((/(/**(/*(#,,#@*//***/*(##(@/(/((/(#&#&&%&%%%&&&&#//(((//////////////////////,                                          
-  // ///////////////////////##(((((%%#(#(((/*(((*@*&,/(@@#(****//((@@@/%(#%&#%#&%%&&&&&&&(/////((//////////////////////,                                          
-  // ////////////////////////////////(&%####%(&/&,@@@@@(%/,/(####*(&(@@@@@@&&&&&&&&&&&&**********//////////////////////,                                          
-  // ////////////////////////////////(#((@&&&&(%*%@@@@@#(%%%#**#%%&%@@@@@@@&&&@&@&&&(##/*********//////////////////////,                                          
-  // ////////////////////////////////(#(((#(#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&%#((###/*********//////////////////////,                                          
-  // ////////////////////////////////(#(((#(###%#%%&@@@@@@@@@@@@@@@@@@@@&&##%%##%#((###/*********//////////////////////,   
-
-
+          
+  //                      ******,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,**,,,,,,,,,,,,,,,,,,,,,,,,,,,,************                                          
+  //                    *******,,,,,*,,,,*,*,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#,/****/**//*//**#****                                        
+  //                  ************* *,,*,*,/,,,..............,,,,,,,,,,,,,,,,,,,,*/(,/****(/,(*//////*****                                         
+  //                ******,,,,*,,,**,,,,*./,,,. ............,,,,,,,,,,,,,,,,,,***/,******/(,(//*/*////*/###,                                          
+  //               **,,,,,,,,,,,**,,,*, ,,,,,.  ..........,,,,,,,,,,,,,,,,,***,(,******/(,#//**/*///////,###,                                          
+  //              **,,,,,,,,,*,*,**,,,*,,  ,/**,...*......,,,,,,,,,,,,*,,**//#/,*//******(*(///////////((((##.                                          
+  //            *****,,,,,,,,,,,,*,**,,,,,,,,,,. ..*/,,,,**************/*/(*,,,/**/*******//,/*///*///////((##,                                          
+  //          ******,,,,,,,,,,,,*,*,,,,,,,.,,,,.....,,,,**.,/,**.,,******,**************//*,////////////(((###%,                                          
+  //        ********,*,,,,,,,*,,*,*,,,,,,,,,.....,,,.  ...,,/,**.,/,,******,,,,**********/**/**///**////(((###%%,                                          
+  //       ********,*,,,,,,,,*,*,/*,*,,,,,..  .,,.....,,,,,*/.*/.,/**,,,,,,************///**,///*//////((((####%%(                                          
+  //      **/********,**,,,,,*,,,,,,,,,.,,,,,,,....,,,,...,*(,/*.,/,,*****,,,*******,***//,,/***///////((######%%#/,                                          
+  //      **********,,**,,,****,,,,,*,,,,,,,,....,,**,,,****(,**,,(***,********,,****////(,(*///////////(((#####%%%,                                          
+  //     ************,,***,,,****,,,,***,,...,,,,,,....,,*/**(,/*,,(//***,,,***********///(,/**/////(////(########%%                                          
+  //    ,///********,,,***,,,*****,,*,,******,,,,,****,,,,**/,/**,/,,,*********////******(,(//((////*//((########%%&,                                          
+  //    *//*********,,,,*****,,,*******,*********,********/(,/*,,(//****////***,,,**//(/(,(((///*//((((#######%%%%%**                                          
+  //    //*/************,,*****///*/*//****,,,*****,,,,***,//,/**,/*///***,,,**//((////*((*////((((((((((#######%%%%(,                                          
+  //    *,(******************,**(/(/*****//**,,,,**********(,/****/****////////****//(((#/(((((((///(((((######%%#%%,,                                          
+  //    /***/*/*/*//(((############%(##((((///////***/**(,#.,/*/,/(*///(///////((##%%%%&%&%&&&&&&&&&&&&&&&%%%###%#%%%*                                          
+  //   *&/**//*/((###%&&#%%%%%%%%%%%#(((((((((###/(#%,,,,//*******/**,,*/((#&%%#%#######%&&&&&&&&&&&&@&&&&&&%%%%%##&@(,                                          
+  //   &&&(*///((((#%%%(#*******///*//////(#%####(%,(******,******////((#%%%%%%%%%(////////////////(&&&&@&&&&%%%%#&&&@/,                                          
+  //   %&,#%/**(((/#/#/*(*%***************/////#%%#(((/*,,**********///(%%%%%&%#////////////////////@%%%&@&&%&&%%#%&%#&,                                          
+  //   (,*&&**(##,********,#/***************/////%(/******************#%%%%%////////////////****(//%%%%%%%##&&%%%&&##&#,                                          
+  //   //*/&&#,/,,(*//********,/#*,,,,,,,,**/#%//*//****,,,,,,,****//(%#%%%%&&@%(/////***,*/&/*/((((((#%%&%#%%#@@@&#%&#*                                          
+  //   #*#,(&/,,,,,**,*%,//*********************/******,,**********//(##%%%#%%%%%%*********///(//#%#(&/((/#####%@##@#&#*                                          
+  //   #%**,#/,,,,,,,,,,*,,,,*##(***,,/,*((,.,*,*******,,,,,****,,,,*(###%%%%#%,*/((/****(*/#%#***///////((((#%%%###@%#,                                          
+  //   *%*(#&/*,,,,,,,,,,,,,,,,,,,,..    .,*,,*********************//###%%%////*/*,****,*************////((((##%@%%%%##,                                          
+  //   *(,(#**,,,,,,,,,,,,,,,,,,...   .,(,.*,,*****/***,,,,,,,,***//####%*,****/,*/*,,,,,,*,*******////((((##%#&&#%%%//                                          
+  //   (//(*******,,,,,,,,,,,,,,,,......,/,*,,,,,,********,*********/##%%//*,,,*,*//*,,,,,,*******////(((###%%%%%%&%%%#                                          
+  //    ((#*/*********,,,,,,,,,,,,,,,,,,./,,,**,****//**,,,,,,,*,,,*(#%%%///////*,****,,,,,,,,,,,,,,,,,,###%%%%%%&#%%%(                                          
+  //    ((((#*#*********,,,,,,,,,,,,,,,,,*,,******///******,,,*/***/##%%(/****//(%/,,,,,,,,,,,,,,,,***##%%%%%%%&%&%%%%/                                          
+  //     ((((((/*#***************,,,,,,***#*//**(//(///**,,****,****(#%%////(/(((,,,,,,*************##%%%%%%&%&%&%%%%(                                          
+  //     ((((((((#*(////**********************,(/*/(//***,,,***,*/**#%%%((#/%(*/,**************###%%%%%%%%&%&&&&%%%%#                                          
+  //       (((((((((*(%%(**///*********************//(//****,***,****##%%#%******************#%%%%&&%%&@&&&&&&&&%%%%                                          
+  //        ((((((((#(/#//((**(%(***************,*****#//*////(//(((#/%#%%(****************###%#@&%%%&&%&&&&&&&&%%%                                          
+  //         (((((((#(#%//////////************,,,,****(//%#(/***/(#&&@%%&%***************%#%%%&%%&&%%&&&&&&&&&%%%%%                                          
+  //         (((((((((((#(///////#/*****%/*****,,,***(#/(#%&&%%%%%%&&@&&&&&(***********#@%#%%%%&%%%&&&&&&&&&&&&&%%                                          
+  //          (%(((((((((/(////*((******#&#/****#*,,,********(%(%%%%%%%%%%*//#*******&&@%%%%%&&&%&&&&&&&&&&&&&&%&                                          
+  //           ##%(((((#(/%%*////********@&%&&&&&&&&&&&(&*********//%&&&&&&&@@@@&&@@%%%%%%%%%%%%&@@&&&&&&&%&%%%%                                          
+  //            /#*%//%&&%%/////**********/@@@@@@@@@@@@@&/,,,,,,,**%@@@@@@@@@@@@@@&%%%%%%%%%%%%%&%&&@@&%&&#&%%%                                          
+  //            ///////(%/#/////********,#/**,,,,,,,,,,,,,,,,,,,,,*******/////%%%%&&%%%%%%%%%%%&&&&&@&%%%%%%%%                                          
+  //             /*/*///////#//*************,,,,,,,,,,*///******///(((#((/////((((#%%%%%%%%%%%%%%%&&%%%%%%%%%                                          
+  //              //******/(//**********#*******(&&&&&&&&&&&&&&&&&&&&&&@@@@&&%##%%%%&%%%%%%%%%%%&%%%%%%%%%&*                                          
+  //              *(/******///**/%#(****%*&&&&%******,,. .,***********/////(%%&&@@@&&%%%&&@@%%%&%%%%%%%%%&(                                          
+  //               (,(*******((/*****************,,,,,,,,,,,,,,,,,********/(######%#%%%%%%%%%&&&%%%%%%%&#%                                          
+  //                ((,#*/***********************/////////****/////((#%%&&&%%%####%##%%%%%%%%%%%%%%%%&%&&                                          
+  //                //((/*(*///********************///((##%%&&&&&&&&&&%%%####(#((##%%%%%%%%%%%%%%%&#&&&&*                                          
+  //                 ,((//#*/*#******************////////////((#(#((#%#&%####((#%%%%%%%%%%%%%%&%%%&&%&&*                                          
+  //                   ((((((*(/,(*********************************//////((((#(######%%%%%%&#%%%&&&&&%                                          
+  //                    ##(((#*((#,#***********************/,***(***/////////(((((##%%%%%&%&&%%&&&&&                                          
+  //                      ##((#/#(((,#**************(/,,*,/,//((/,#**,/%(////(((((%#%%%%%&&&%%&&&&&                                          
+  //                       ((((((((((//(,#*/*###/,,,/#,%(,#&&&&&#&&@*(*(#%//*/%%&&(#%&#&%&&&&%&&&&                                          
+  //                         ((()))))(/(////,,*##/,*/(((,(%%@*,,,**&@*%((/(((#(%&&#((&%&%%%&&&&                                         
+  //                            (()))))))(///((/(/**(/*(#,,#@*//***/*(##(@/(/((/(#&#&&%&%%%&&&                                          
+  //                               ()()()(()#(((/*(((*@*&,/(@@#(****//((@@@/%(#%&#%#&%%&&&()                                         
+  //                                 ())))#####%(&/&,@@@@@(%/,/(####*(&(@@@@@@&&&&&&&())                                       
+  //                                      &&(%*%@@@@@#(%%%#**#%%&%@@@@@@@()()()()()())                                         
+  //                                         ()()()&^()()@@@@@@@@@@@@@@@&*&()()())()                                          
+  //                                                
+  //                                               
+  //
 
 /*
-* Gas optimization 
-*
-*
-*
-*
-*
+*Welcome to the Satoshiverse! The Satoshiverse is an epic comic NFT collaboration between Apollo NFT Studios, Jose Delbo, and YOU, the NFT community. 
+*It tells the story of our hero, Satoshi The Creator and his quest to save the world from the Defenders of Fiat and the many other foes who lie ahead.
 */ 
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
-import "./tokens/Legionnaire.sol";
-import "./lib/Operatorable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./interfaces/ILegionnaire.sol";
+import "./utils/Operatorable.sol";
+import "./helpers/NumberHelper.sol";
 
-// Sale contract
+
+ /**
+    * SatoshiVerse Legionnaire Avatar NFT Contract V1 
+    * Provided by Satoshiverse LLC
+    * Authored by brnaldomesi a Senior Solidity Developer @ Herasoft
+    */
 contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
-  Legionnaire public immutable legionnaire;
+  ILegionnaire public legionnaire;
 
-  address payable svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
+  // Payable Address for the Initial Sale
+  address payable public svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
   
-  uint8 calledTimesForTokenURI;
+  uint16 _claimSV = 1;
+  uint16 _purchaseSV = 3351;
 
-  uint16[] publicRandomArr;
-  uint16[] presaleRandomArr;
-  uint16 _preSaleSV = 1;
-  uint16 _publicSV = 5001;
-
-  uint16[] tokenIdsForBatch;
-  string[] ipfsURIsForBatch;
-
-  uint256 public SV_MAX = 10000;
+  uint256 SV_MAX = 10000;
   
-  uint256 private _activeDateTime = 1637384400; // November 20th at 11:00 AM EST
+  uint256 _activeDateTime; 
   uint256 INTERVAL = 3600;
   uint256 randNonce;
   
   // Chainlink
+  uint256 randomNess;
   uint256 internal fee;
   bytes32 internal keyHash;
   
   bool revealState;
 
+  bool public claimState = true;
+  bool public purchaseState = true;
+
   bytes32 requestId;
 
+  string[] public leftoverUris;
+
   mapping(address => mapping(string => uint8)) public tokensCount;
-  mapping(address => uint8) public purchaseLimit;
+
+  // Only through Day 4 Mints
+  mapping(address => uint8) public purchasedSoFar;
   
+
+  // Set Initial Addresses and Variables Upon Deployment
   constructor(
+    address _operator,
+    address _uriSetter,
     address _legionnaire,
     address _vrfCoordinator,
     address _link,
@@ -129,45 +130,20 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     keyHash = _keyHash;
     fee = _fee;
 
-    legionnaire = Legionnaire(_legionnaire);
+    legionnaire = ILegionnaire(_legionnaire);
 
+    addOperator(_operator);
+    addURISetter(_uriSetter);
   }
 
-  function _daysSince() internal view returns (uint256) {
-    unchecked {
-      uint256 passedTime = (block.timestamp - _activeDateTime) / INTERVAL;
-      if(passedTime <= 6) {
-        return 0;
-      } else if( passedTime <= 24) {
-        return 1;
-      } else if( passedTime <= 48 ) {
-        return 2;
-      } else if( passedTime <=72 ) {
-        return 3;
-      } else if( passedTime <= 96 ) {
-        return 4;
-      } else if( passedTime <= 120 ) {
-        return 5;
-      } else if( passedTime <= 144 ) {
-        return 6;
-      } else if( passedTime <= 168 ) {
-        return 7;
-      } else {
-        return 8;
-      }
-    }
+// Change the Payment Adddress if Necessary
+  function setPaymentAddress(address _svEthAddr) external onlyOwner {
+    svEthAddr = payable(_svEthAddr);
   }
 
-    /**
-    * 
-    */
-  function min(uint a, uint b) private pure returns (uint) {
-    return a < b ? a : b;
-  }
-
+ // Operator Account Sets the Contract with a List of Presale Holders Addresses
+ // Snapshot was taken 12pm EST Monday November 22, 2021
   function seedPresaleWhiteList(address[] calldata users, string calldata tokenType, uint8[] calldata counts) external onlyOperator {
-
-    require(msg.sender != address(0), "Invalid user address");
     require(users.length == counts.length, "Mismatched presale addresses and counts");
 
     for(uint256 i = 0; i < users.length; i++) {
@@ -175,30 +151,28 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-   /**
-    * 
-    * potentially Add contract address for BitcoinAngel , ArtVaTar for whitelist , might be on the dapp
-    * f out the purchase limit when the user
-    */
- 
-  function seedPublicWhiteList(address[] calldata users, uint8[] calldata counts) external onlyOperator {
-    require(msg.sender != address(0), "Invalid user address");
-    require(users.length == counts.length, "Mismatched public addresses and counts");
-
-    for(uint256 i = 0; i < users.length; i++) {
-      purchaseLimit[users[i]] += counts[i];
-    }
+// Operator can toggle the claim mechanism as On / Off
+  function toggleClaim() external onlyOperator {
+    claimState = !claimState;
+  }
+// Operator can toggle the purchasing mechanism as On / Off for the Sale of Legionnaires
+  function togglePurchase() external onlyOperator {
+    purchaseState = !purchaseState;
   }
 
-    /**
-    * User Claims their Legionnaire based on their holding
-    * TODOs
-    * 
-    *
-    */
+// Returns a Random Legionnaire from the set of Random Legionniares 
+  function popRandomTokenURI() internal returns(string memory) {
+    // leftOverUris === unpurchased / unclaimed Legionnaires 
+    uint256 randomIndex = getRandomIndex(leftoverUris.length);
+    string memory tokenURI = leftoverUris[randomIndex];
+    leftoverUris[randomIndex] = leftoverUris[leftoverUris.length - 1];
+    leftoverUris.pop();
+    return tokenURI;
+  }
 
-  function claim(uint256 claimedCount) external whenNotPaused nonReentrant {
-
+  // A secure function for Claiming Legionnaires on a specific window of time dependant on the presale token the user has. 
+  function claim(uint256 claimedCount) external nonReentrant {
+    require(claimState, "Claim is disabled");
     require(block.timestamp >= _activeDateTime, "Presale not start yet");
     
     uint8 genesisTokenCount = tokensCount[msg.sender]['genesis'];
@@ -206,11 +180,19 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     uint8 goldTokenCount = tokensCount[msg.sender]['gold'];
     uint8 silverTokenCount = tokensCount[msg.sender]['silver'];
 
-    uint256 passedDays = _daysSince();
+    uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
 
-    uint256 minCount = min(genesisTokenCount + platinumTokenCount + goldTokenCount + silverTokenCount, claimedCount);
+    uint256 totalCount = genesisTokenCount;
+    totalCount += platinumTokenCount;
+    totalCount += goldTokenCount;
+    totalCount += silverTokenCount;
+
+    uint256 minCount = NumberHelper.min(totalCount, claimedCount);
+    require(_claimSV + minCount <= 3301, "No legionnaires left for presale");
+
     uint256 i = 0;
     uint256 tokenId;
+    string memory tokenURI;
 
     while(i < minCount) {
       if(genesisTokenCount > 0) {
@@ -224,17 +206,18 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
       }
 
       if(revealState) {
-        uint256 randomIndex = getRandomIndex(presaleRandomArr.length);
-        tokenId = presaleRandomArr[randomIndex];
-        presaleRandomArr[randomIndex] = presaleRandomArr[presaleRandomArr.length - 1];
-        presaleRandomArr.pop();
-      } else {
-        tokenId = _preSaleSV;
-        require(tokenId <= SV_MAX / 2, "No legionnaires left for presale");
-        _preSaleSV++;
+        tokenURI = popRandomTokenURI();
       }
+
+      tokenId = _claimSV;
+      _claimSV++;
       
       legionnaire.safeMint(msg.sender, tokenId);
+      if(!revealState) {
+        legionnaire.setTokenURI(tokenId, "placeholder");
+      } else {
+        legionnaire.setTokenURI(tokenId, tokenURI);
+      }
       i++;
     }
 
@@ -244,48 +227,46 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     tokensCount[msg.sender]['silver'] = silverTokenCount;
   }
 
-   /**
-    * TODO 
-    * Add purchase limit of 2 legionnaires 
-    * 
-    */
-
-  function purchase(uint256 count) external payable whenNotPaused nonReentrant {
-
+  
+// A secure function to purchase a Legionnaire 
+  function purchase(uint256 count) external payable nonReentrant {
+    require(purchaseState, "Purchase is disabled");
     require(block.timestamp >= _activeDateTime, "Sale not start yet");
-    uint256 passedDays = _daysSince();
+    uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
     require(passedDays > 3, "Public sale not start yet");
     require(msg.value >= count * .1 ether, "Not enough ether");
     
     uint256 limit; 
     if(passedDays < 5) {
-      limit = purchaseLimit[msg.sender];
-      require(limit > 0 && limit < 3, "Not allowed to purchase");
-      
-      if(count < limit) {
-        purchaseLimit[msg.sender] -= uint8(count);
-        limit = count;
-      } else {
-        purchaseLimit[msg.sender] = 0;
-      }
-    } else {
-      limit = count;
+      limit = purchasedSoFar[msg.sender];
+      require(count + limit > 0 && count + limit < 3, "Not allowed to purchase that amount");
+      purchasedSoFar[msg.sender] += uint8(count);
+     // on Day 5 you can only purchase up to 10 / transaction 
+    } else if (passedDays < 6) {
+      require(count < 11, "Up to 10 only");
     }
 
+    limit = count;
+    require(_purchaseSV + limit <= SV_MAX + 1, "No legionnaires left for public sale");
+
     uint256 tokenId;
+    string memory tokenURI;
+
+
     for (uint256 i = 0; i < limit; i++) {
       if(revealState) {
-        uint256 randomIndex = getRandomIndex(publicRandomArr.length);
-        tokenId = publicRandomArr[randomIndex];
-        publicRandomArr[randomIndex] = publicRandomArr[publicRandomArr.length - 1];
-        publicRandomArr.pop();
-      } else {
-        tokenId = _publicSV;
-        require(tokenId <= SV_MAX, "No legionnaires left for public sale");
-        _publicSV++;
+        tokenURI = popRandomTokenURI();
       }
-      
+
+      tokenId = _purchaseSV;
+      _purchaseSV++;
+    
       legionnaire.safeMint(msg.sender, tokenId);
+      if(!revealState) {
+        legionnaire.setTokenURI(tokenId, "placeholder");
+      } else {
+        legionnaire.setTokenURI(tokenId, tokenURI);
+      }
     }
 
     (bool sent, ) = svEthAddr.call{ value: limit * .1 ether }("");
@@ -297,83 +278,92 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     }
   }
 
-   /**
-    * 
-    */
-  function setActiveDateTime(uint256 activeDateTime) external onlyOwner {
+// Operator can set the start time in UNIX stamp for the claim and sale period 
+  function setActiveDateTime(uint256 activeDateTime) external onlyOperator {
     _activeDateTime = activeDateTime;
   }
-   /**
-    * 
-    */
-  function setInterval(uint256 interval) external onlyOwner {
-    INTERVAL = interval;
+
+
+// Operator pushes the set of remaining unclaimed legionnaires going into self-reveal phase
+  function pushLeftOverUris(string[] memory leftoverUris_) external onlyOperator {
+    require(!revealState, "Self-Reveal already begun");
+
+    for(uint256 i = 0; i < leftoverUris_.length; i++) {
+      leftoverUris.push(leftoverUris_[i]);
+    }
   }
 
+  // Returns the left over URIs array length
+  function getLeftOverUrisLength() public view returns(uint256) {
+    return leftoverUris.length;
+  }
 
-  function startReveal() external onlyOwner {
-    uint16 i;
-    for(i = _preSaleSV; i < SV_MAX / 2 + 1; i++) {
-      presaleRandomArr.push(i);
-    }
-
-    for(i = _publicSV ; i < SV_MAX + 1; i++) {
-      publicRandomArr.push(i);
-    }
-    
+/*
+*
+* A function for the Operator to start the period of time for the user to reveal the URI upon mint
+*
+*/  
+  function beginSelfRevealPeriod() external onlyOperator {
     revealState = true;
   }
-   /**
-    * 
-    */
+   
+   // A Random Index between zero and range leveraging VRF 
+  
   function getRandomIndex(uint256 range) internal returns(uint256) {
     randNonce++;
-    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % range;
+    return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, randomNess))) % range;
   }
 
-  function safeBatchMint(address holder) external whenPaused onlyOperator {
-    require(holder != address(0), "Invalid address to send");
-    require(revealState, "Have to reveal");
+// Operator can batch mint and trasnfer remaining Legionnaires to a secure address
 
-    for(uint256 i = 0; i < publicRandomArr.length; i++) {
-      legionnaire.safeMint(holder, publicRandomArr[i]);
-    }
+  function safeBatchMintAndTransfer(address holder, bool isSetUri, uint16 batchSize) external onlyOperator {
+    require(revealState, "Have to begin Self-Reveal");
+    require(_purchaseSV + batchSize <= SV_MAX + 1, "No legionnaires left for public sale");
 
-    _publicSV = 10001;
-    delete publicRandomArr;
-  }
-
-  function setBatchTokenURIs(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyOperator {
-    require(revealState, "Have to reveal");
-
-    calledTimesForTokenURI++;
-    require(calledTimesForTokenURI < 3, "Immutable");
-    require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
-    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
-
-    delete tokenIdsForBatch;
-    delete ipfsURIsForBatch;
-
-    for(uint256 i = 0; i < _tokenIds.length; i++) {
-      tokenIdsForBatch.push(_tokenIds[i]);
-      ipfsURIsForBatch.push(_tokenURIs[i]);
-    }
-
-    requestId = requestRandomness(keyHash, fee);
-  }
-
-  function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
-    if(requestId == _requestId) {
-      randNonce++;
-      while(tokenIdsForBatch.length > 0) {
-        uint256 length = tokenIdsForBatch.length;
-        uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce, _randomness))) % length;
-        legionnaire.setTokenURI(tokenIdsForBatch[length - 1], ipfsURIsForBatch[randomIndex]);
-
-        ipfsURIsForBatch[randomIndex] = ipfsURIsForBatch[length - 1];
-        tokenIdsForBatch.pop();
-        ipfsURIsForBatch.pop();
+    for(uint256 i = _purchaseSV; i < _purchaseSV + batchSize; i++) {
+      legionnaire.safeMint(holder, i);
+      if(isSetUri) {
+        legionnaire.setTokenURI(i, "placeholder");
       }
     }
+
+    _purchaseSV = uint16(_purchaseSV + batchSize);
+  }
+
+ // URISetter will call this to randomly pair URIs with NFT Metadata to tokens.
+  function pairLegionnairesWithUris(uint16[] memory _tokenIds, string[] memory _tokenURIs) external onlyURISetter {
+    require(_tokenIds.length == _tokenURIs.length, "Mismatched ids and URIs");
+    require(_tokenIds.length > 0, "Empty parameters");
+
+    while(_tokenIds.length > 0) {
+      uint256 length = _tokenIds.length;
+      uint256 randomIndex = getRandomIndex(length);
+      legionnaire.setTokenURI(_tokenIds[length - 1], _tokenURIs[randomIndex]);
+      _tokenURIs[randomIndex] = _tokenURIs[length - 1];
+      delete _tokenIds[length - 1];
+      delete _tokenURIs[length - 1];
+
+      assembly { mstore(_tokenIds, sub(mload(_tokenIds), 1)) }
+      assembly { mstore(_tokenURIs, sub(mload(_tokenURIs), 1)) }
+    }
+  }
+
+ // Function saves the random nonce from VRF into the contract 
+  function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
+    if(requestId == _requestId) {
+      randomNess = _randomness;
+    }
+  }
+
+ // Owner can decrease the total supply not ever exceeding 10,000 Legionnaires
+  function setMaxLimit(uint256 maxLimit) external onlyOwner {
+    require(maxLimit < 10001, "Exceed max limit 10000");
+    SV_MAX = maxLimit;
+  }
+
+ // Operator Calls to VRF for a random nonce
+  function requestRandomToVRF() external onlyOperator {
+    require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK");
+    requestId = requestRandomness(keyHash, fee);
   }
 }
