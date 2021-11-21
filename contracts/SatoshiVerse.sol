@@ -188,7 +188,7 @@ contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     totalCount += silverTokenCount;
 
     uint256 minCount = NumberHelper.min(totalCount, claimedCount);
-    require(_claimSV + minCount <= 3351, "No legionnaires left for presale");
+    require(_claimSV + minCount <= 3301, "No legionnaires left for presale");
 
     uint256 i = 0;
     uint256 tokenId;
