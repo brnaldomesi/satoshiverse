@@ -42,6 +42,10 @@ module.exports = {
     rinkeby: {
       url: process.env.RINKEBY_URL,
       accounts: [process.env.PRIVATEKEY]
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL,
+      accounts: [process.env.PRIVATEKEY]
     }
   },
   mocha: {
