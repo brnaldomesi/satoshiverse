@@ -74,7 +74,7 @@ import "../utils/Operatorable.sol";
 import "../helpers/StringHelper.sol";
 
 /**
-    * SatoshiVerse Legionnaire Avatar NFT Contract V1 
+    * Satoshiverse Legionnaire Avatar NFT Contract V1 
     * Provided by Satoshiverse LLC
     * Authored by brnaldomesi a Senior Solidity Developer @ Herasoft
     */
@@ -82,7 +82,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
   // Token URI
   string public baseURI = "https://ipfs.io/ipfs/";
 
-  constructor() ERC721("Satoshi's Legions - The Legionnaires", "LEGIONNAIRES")
+  constructor() ERC721("Satoshis Legions - The Legionnaires", "LEGIONNAIRES")
   {
 
   }
@@ -135,7 +135,7 @@ contract Legionnaire is ERC721Enumerable, ERC721URIStorage, Operatorable {
     require(super._exists(_tokenId), "LEGIONNARE BURN: TOKEN_ID_INVALID");
     _burn(_tokenId);
   }
-// A secure function for the SatoshiVerse Contract to set the tokenURI 
+// A secure function for the Satoshiverse Contract to set the tokenURI 
   function setTokenURI(uint256 tokenId, string memory _tokenURI) external onlyOperator {
     ERC721URIStorage._setTokenURI(tokenId, _tokenURI);
   }

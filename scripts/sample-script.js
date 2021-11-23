@@ -38,8 +38,8 @@ async function main() {
   const legionnaire = await Legionnaire.deploy();
   await legionnaire.deployed();
 
-  const SatoshiVerse = await hre.ethers.getContractFactory("SatoshiVerse");
-  const satoshiVerse = await SatoshiVerse.deploy(
+  const Satoshiverse = await hre.ethers.getContractFactory("Satoshiverse");
+  const satoshiverse = await Satoshiverse.deploy(
     "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
     "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
     legionnaire.address,
@@ -49,9 +49,9 @@ async function main() {
     chainlinkConf[networkName].fee
   );
 
-  await satoshiVerse.deployed();
+  await satoshiverse.deployed();
 
-  console.log("SatoshiVerse deployed to: ", satoshiVerse.address);
+  console.log("Satoshiverse deployed to: ", satoshiverse.address);
   console.log("Legionnaire deployed to: ", legionnaire.address);
 }
 

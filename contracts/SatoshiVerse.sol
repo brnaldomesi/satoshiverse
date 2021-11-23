@@ -76,18 +76,18 @@ import "./helpers/NumberHelper.sol";
 
 
  /**
-    * SatoshiVerse Legionnaire Avatar NFT Contract V1 
+    * Satoshiverse Legionnaire Avatar NFT Contract V1 
     * Provided by Satoshiverse LLC
     * Authored by brnaldomesi a Senior Solidity Developer @ Herasoft
     */
-contract SatoshiVerse is VRFConsumerBase, Operatorable, ReentrancyGuard {
+contract Satoshiverse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   ILegionnaire public legionnaire;
 
   // Payable Address for the Initial Sale
   address payable public svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
   
   uint16 _claimSV = 1;
-  uint16 _purchaseSV = 3351;
+  uint16 _purchaseSV = 3301;
 
   uint256 SV_MAX = 10000;
   
