@@ -9,21 +9,21 @@ library NumberHelper {
   function daysSince(uint256 _activeDateTime, uint256 _interval) internal view returns (uint256) {
     unchecked {
       uint256 passedTime = (block.timestamp - _activeDateTime) / _interval;
-      if(passedTime <= 6) {
+      if(passedTime < 6) {
         return 0;
-      } else if( passedTime <= 24) {
+      } else if( passedTime < 24) {
         return 1;
-      } else if( passedTime <= 48 ) {
+      } else if( passedTime < 48 ) {
         return 2;
-      } else if( passedTime <=72 ) {
+      } else if( passedTime < 72 ) {
         return 3;
-      } else if( passedTime <= 96 ) {
+      } else if( passedTime < 96 ) {
         return 4;
-      } else if( passedTime <= 120 ) {
+      } else if( passedTime < 120 ) {
         return 5;
-      } else if( passedTime <= 144 ) {
+      } else if( passedTime < 144 ) {
         return 6;
-      } else if( passedTime <= 168 ) {
+      } else if( passedTime < 168 ) {
         return 7;
       } else {
         return 8;
