@@ -34,15 +34,15 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Legionnaire = await hre.ethers.getContractFactory("Legionnaire");
-  const legionnaire = await Legionnaire.deploy();
-  await legionnaire.deployed();
+  // const Legionnaire = await hre.ethers.getContractFactory("Legionnaire");
+  // const legionnaire = await Legionnaire.deploy();
+  // await legionnaire.deployed();
 
   const Satoshiverse = await hre.ethers.getContractFactory("Satoshiverse");
   const satoshiverse = await Satoshiverse.deploy(
-    "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
-    "0x261a2FeaA8DdCBBb3347Fa4409A26D41DC1827f8",
-    legionnaire.address,
+    "0x2e300C4463fb27B5ad83b01757634fe72638ce1b",
+    "0x2e300C4463fb27B5ad83b01757634fe72638ce1b",
+    "0x5041a99684d38e280e4b0b356185bf18c991f88b",
     chainlinkConf[networkName].vrfCoordinator,
     chainlinkConf[networkName].link,
     chainlinkConf[networkName].keyHash,
