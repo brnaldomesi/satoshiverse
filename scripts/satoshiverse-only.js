@@ -52,7 +52,7 @@ async function main() {
   await satoshiverse.deployed();
 
   console.log("Satoshiverse deployed to: ", satoshiverse.address);
-  console.log("Legionnaire deployed to: ", legionnaire.address);
+  // console.log("Legionnaire deployed to: ", legionnaire.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
