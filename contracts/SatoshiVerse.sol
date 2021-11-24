@@ -86,7 +86,7 @@ contract Satoshiverse is VRFConsumerBase, Operatorable, ReentrancyGuard {
   // Payable Address for the Initial Sale
   address payable public svEthAddr = payable(0x981268bF660454e24DBEa9020D57C2504a538C57);
   
-  uint16 _claimSV = 1;
+  uint16 _claimSV = 190;
   uint16 _purchaseSV = 3301;
 
   uint256 SV_MAX = 10000;
