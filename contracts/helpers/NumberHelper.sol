@@ -9,9 +9,7 @@ library NumberHelper {
   function daysSince(uint256 _activeDateTime, uint256 _interval) internal view returns (uint256) {
     unchecked {
       uint256 passedTime = (block.timestamp - _activeDateTime) / _interval;
-      if(passedTime < 6) {
-        return 0;
-      } else if( passedTime < 24) {
+      if( passedTime < 24) {
         return 1;
       } else if( passedTime < 48 ) {
         return 2;

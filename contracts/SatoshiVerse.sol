@@ -183,9 +183,15 @@ contract Satoshiverse is VRFConsumerBase, Operatorable, ReentrancyGuard {
     uint256 passedDays = NumberHelper.daysSince(_activeDateTime, INTERVAL);
 
     uint256 totalCount = genesisTokenCount;
-    totalCount += platinumTokenCount;
-    totalCount += goldTokenCount;
-    totalCount += silverTokenCount;
+    if (passedDays >= 1) {
+        totalCount += platinumTokenCount;
+    }
+    if (passedDays >= 2) {
+        totalCount += goldTokenCount;
+    }
+    if (passedDays >= 3) {
+        totalCount += silverTokenCount;
+    }
 
     uint256 minCount = NumberHelper.min(totalCount, claimedCount);
     require(_claimSV + minCount <= 3301, "No legionnaires left for presale");
